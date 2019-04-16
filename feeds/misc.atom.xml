@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Blog - misc</title><link href="https://KristiGourlay.github.io/blog/" rel="alternate"></link><link href="https://KristiGourlay.github.io/blog/feeds/misc.atom.xml" rel="self"></link><id>https://KristiGourlay.github.io/blog/</id><updated>2019-04-10T10:20:00-04:00</updated><entry><title>Second Blog Post</title><link href="https://KristiGourlay.github.io/blog/blog_2.html" rel="alternate"></link><published>2019-04-10T10:20:00-04:00</published><updated>2019-04-10T10:20:00-04:00</updated><author><name>Kristi Gourlay</name></author><id>tag:kristigourlay.github.io,2019-04-10:/blog/blog_2.html</id><summary type="html">&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;                        Don&amp;#39;t be a Dummy, (For)get_dummies!
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;pd.get_dummies is a pandas function that transforms a column containing categorical variables into a series of new columns composed of 1s and 0s (true and false). The significance in this process is that in order for any model or algorithm to process …&lt;/p&gt;</summary><content type="html">&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;                        Don&amp;#39;t be a Dummy, (For)get_dummies!
-&lt;/pre&gt;&lt;/div&gt;
-
-
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Blog - misc</title><link href="https://KristiGourlay.github.io/blog/" rel="alternate"></link><link href="https://KristiGourlay.github.io/blog/feeds/misc.atom.xml" rel="self"></link><id>https://KristiGourlay.github.io/blog/</id><updated>2019-04-10T10:20:00-04:00</updated><entry><title>Second Blog Post</title><link href="https://KristiGourlay.github.io/blog/blog_2.html" rel="alternate"></link><published>2019-04-10T10:20:00-04:00</published><updated>2019-04-10T10:20:00-04:00</updated><author><name>Kristi Gourlay</name></author><id>tag:kristigourlay.github.io,2019-04-10:/blog/blog_2.html</id><summary type="html">&lt;p&gt;Don't be a Dummy, (For)get_dummies!&lt;/p&gt;
+&lt;p&gt;pd.get_dummies is a pandas function that transforms a column containing categorical variables into a series of new columns composed of 1s and 0s (true and false). The significance in this process is that in order for any model or algorithm to process categorical …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Don't be a Dummy, (For)get_dummies!&lt;/p&gt;
 &lt;p&gt;pd.get_dummies is a pandas function that transforms a column containing categorical variables into a series of new columns composed of 1s and 0s (true and false). The significance in this process is that in order for any model or algorithm to process categorical features, they must first be transformed into numerical representation. Why not assign categorical features a number between 1 and 10 and keep them in one column? This process would result in assigning irrelevant values to items in a categorical column that would be misinterpreted by an algorithm. More columns composed of 1s and 0s is preferred over a single column, because it has the benefit of categories not weighting a value improperly.&lt;/p&gt;
 &lt;p&gt;To show how Get_Dummies works, I will create a dictionary of hockey players and transform it into a DataFrame:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;IPython.display&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;HTML&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
 &lt;span class="n"&gt;hockey_players&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;({&lt;/span&gt;
 
     &lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Sidney Crosby&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
@@ -135,24 +130,12 @@
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;hockey_players&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DataFrame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hockey_players&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="n"&gt;hockey_players&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hockey_players&lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;age&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;nationality&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;team&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;position&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;stanley_cup&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;hart&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
 &lt;span class="n"&gt;hockey_players&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;HTML&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hockey_players&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_html&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;classes&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;table table-stripped table-hover&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border="1" class="dataframe"&gt;
+&lt;table border="1" class="dataframe table table-stripped table-hover"&gt;
   &lt;thead&gt;
     &lt;tr style="text-align: right;"&gt;
       &lt;th&gt;&lt;/th&gt;
@@ -173,8 +156,8 @@
       &lt;td&gt;Canadian&lt;/td&gt;
       &lt;td&gt;Pittsburgh Penguins&lt;/td&gt;
       &lt;td&gt;C&lt;/td&gt;
-      &lt;td&gt;yes&lt;/td&gt;
-      &lt;td&gt;yes&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;th&gt;1&lt;/th&gt;
@@ -183,8 +166,8 @@
       &lt;td&gt;Russian&lt;/td&gt;
       &lt;td&gt;Tampa Bay Lightning&lt;/td&gt;
       &lt;td&gt;RW&lt;/td&gt;
-      &lt;td&gt;no&lt;/td&gt;
-      &lt;td&gt;no&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;th&gt;2&lt;/th&gt;
@@ -193,8 +176,8 @@
       &lt;td&gt;Canadian&lt;/td&gt;
       &lt;td&gt;Edmonton Oilers&lt;/td&gt;
       &lt;td&gt;C&lt;/td&gt;
-      &lt;td&gt;no&lt;/td&gt;
-      &lt;td&gt;yes&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;th&gt;3&lt;/th&gt;
@@ -203,8 +186,8 @@
       &lt;td&gt;Finnish&lt;/td&gt;
       &lt;td&gt;Colorado Avalanche&lt;/td&gt;
       &lt;td&gt;RW&lt;/td&gt;
-      &lt;td&gt;no&lt;/td&gt;
-      &lt;td&gt;no&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr&gt;
       &lt;th&gt;4&lt;/th&gt;
@@ -213,12 +196,11 @@
       &lt;td&gt;Russian&lt;/td&gt;
       &lt;td&gt;Washington Capitals&lt;/td&gt;
       &lt;td&gt;LW&lt;/td&gt;
-      &lt;td&gt;yes&lt;/td&gt;
-      &lt;td&gt;yes&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;/div&gt;
 
 &lt;p&gt;Above is a simple dataset consisiting of 13 National Hockey League players. For each player, we are provided with&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;    -name 

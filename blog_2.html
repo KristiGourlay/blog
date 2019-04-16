@@ -14,13 +14,11 @@
  <div class="col-md-8">
   <h3>Second Blog Post</h3>
   <label>2019-04-10</label>
-  <div class="highlight"><pre><span></span>                        Don&#39;t be a Dummy, (For)get_dummies!
-</pre></div>
-
-
+  <p>Don't be a Dummy, (For)get_dummies!</p>
 <p>pd.get_dummies is a pandas function that transforms a column containing categorical variables into a series of new columns composed of 1s and 0s (true and false). The significance in this process is that in order for any model or algorithm to process categorical features, they must first be transformed into numerical representation. Why not assign categorical features a number between 1 and 10 and keep them in one column? This process would result in assigning irrelevant values to items in a categorical column that would be misinterpreted by an algorithm. More columns composed of 1s and 0s is preferred over a single column, because it has the benefit of categories not weighting a value improperly.</p>
 <p>To show how Get_Dummies works, I will create a dictionary of hockey players and transform it into a DataFrame:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="n">hockey_players</span> <span class="o">=</span> <span class="p">({</span>
 
     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Sidney Crosby&#39;</span><span class="p">,</span>
@@ -146,24 +144,12 @@
 <div class="highlight"><pre><span></span><span class="n">hockey_players</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">hockey_players</span><span class="p">)</span>
 <span class="n">hockey_players</span> <span class="o">=</span> <span class="n">hockey_players</span><span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;nationality&#39;</span><span class="p">,</span> <span class="s1">&#39;team&#39;</span><span class="p">,</span> <span class="s1">&#39;position&#39;</span><span class="p">,</span> <span class="s1">&#39;stanley_cup&#39;</span><span class="p">,</span> <span class="s1">&#39;hart&#39;</span><span class="p">]]</span>
 <span class="n">hockey_players</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="n">hockey_players</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;table table-stripped table-hover&quot;</span><span class="p">))</span>
 </pre></div>
 
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
+<table border="1" class="dataframe table table-stripped table-hover">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -184,8 +170,8 @@
       <td>Canadian</td>
       <td>Pittsburgh Penguins</td>
       <td>C</td>
-      <td>yes</td>
-      <td>yes</td>
+      <td>1</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>1</th>
@@ -194,8 +180,8 @@
       <td>Russian</td>
       <td>Tampa Bay Lightning</td>
       <td>RW</td>
-      <td>no</td>
-      <td>no</td>
+      <td>0</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>2</th>
@@ -204,8 +190,8 @@
       <td>Canadian</td>
       <td>Edmonton Oilers</td>
       <td>C</td>
-      <td>no</td>
-      <td>yes</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>3</th>
@@ -214,8 +200,8 @@
       <td>Finnish</td>
       <td>Colorado Avalanche</td>
       <td>RW</td>
-      <td>no</td>
-      <td>no</td>
+      <td>0</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>4</th>
@@ -224,12 +210,11 @@
       <td>Russian</td>
       <td>Washington Capitals</td>
       <td>LW</td>
-      <td>yes</td>
-      <td>yes</td>
+      <td>1</td>
+      <td>1</td>
     </tr>
   </tbody>
 </table>
-</div>
 
 <p>Above is a simple dataset consisiting of 13 National Hockey League players. For each player, we are provided with</p>
 <div class="highlight"><pre><span></span>    -name 
