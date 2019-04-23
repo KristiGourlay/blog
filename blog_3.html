@@ -332,7 +332,7 @@ model2.fit(
 </pre></div>
 
 
-<p><img alt="catboost" src="/images/newplot1.png"></p>
+<p><img src='images/newplot1.png' alt='newplot1'></p>
 <p>A great feature of CatBoost is it provides information at points specified in your params (above was 'verbose = 5').</p>
 <div class="highlight"><pre><span></span>model2.tree_count_
 </pre></div>
@@ -563,7 +563,7 @@ fast_model.fit(
 </pre></div>
 
 
-<p><img alt="catboost2" src="/images/newplot2.png"></p>
+<p><img src='images/newplot2.png' alt='newplot2'></p>
 <p>In addition to the above parameters that were adjusted to speed up the model's performance, there are also more parameters that can be used to fine-tune the model.</p>
 <div class="highlight"><pre><span></span>tuned_model = CatBoostClassifier(
     iterations=500,
@@ -589,7 +589,7 @@ tuned_model.fit(
 </pre></div>
 
 
-<p><img alt="catboost" src="/images/newplot3.png"></p>
+<p><img src='images/newplot3.png' alt='newplot3'></p>
 <div class="highlight"><pre><span></span>final_model = CatBoostClassifier(
     random_seed=63,
     iterations=int(tuned_model.tree_count_),
