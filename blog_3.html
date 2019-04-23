@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <title>First Blog Post</title>
+ <title>Third Blog Post</title>
  <!-- Latest compiled and minified CSS -->
  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
  <div class="container">
@@ -12,214 +12,149 @@
  <div class="container">
 <div class="row">
  <div class="col-md-8">
-  <h3>First Blog Post</h3>
-  <label>2019-03-28</label>
-  <p><em>The Functionality of Functions</em></p>
-<p>Coming from an academic background based in History, Philosophy, and Law, learning Data Science can be  overwhelming; especially when you haven't taken a Computer or Math course in TWELVE years. The biggest issues I have had in the first three weeks deal with syntax. Learning Python is the equivalent of learning a new language. The one area I have continued to struggle with is how to develop new functions. While this is by far not the hardest task thrown at us, it is essential to most tasks a Data Scientist faces daily.</p>
-<p>To start, writing a basic function is very simple.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">print_my_name</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">)</span>
+  <h3>Third Blog Post</h3>
+  <label>2019-04-23</label>
+  <p>Kitty Got Claws: A Comparison of CatBoost and XGBoost</p>
+<p>Boosting is an ensemble technique where new models are created to correct the errors of past models. Each subsequent tree learns from the errors of its predecessor, as all trees are added sequentially until no further improvements can be made. Gradient boosting is an approach where new models are created from the residuals or errors of prior models and then are added together to make the final prediction. The base learners in gradient boosting are weak learners, but each contributes vital information for the final model. Two examples of these programs are XGBoost and CatBoost. They are two open-source software libraries that provide a gradient boosting framework. </p>
+<p>To compare these two programs, I will load a dataset called "Skyserver", and I will attempt to predict whether an image is a Star, Galaxy, or Quasar. I will begin with XGBoost.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span> 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">loadtxt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn_pandas</span> <span class="kn">import</span> <span class="n">DataFrameMapper</span><span class="p">,</span> <span class="n">FunctionTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+
+<span class="kn">import</span> <span class="nn">catboost</span> <span class="kn">as</span> <span class="nn">cb</span>
+<span class="kn">from</span> <span class="nn">catboost</span> <span class="kn">import</span> <span class="n">CatBoostClassifier</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">Pool</span>
+<span class="kn">import</span> <span class="nn">shap</span>
+
+<span class="kn">import</span> <span class="nn">xgboost</span> <span class="kn">as</span> <span class="nn">xgb</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">plot_tree</span><span class="p">,</span> <span class="n">XGBClassifier</span><span class="p">,</span> <span class="n">plot_importance</span>
+
+
+<span class="n">sky</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;Skyserver.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">print_my_name</span><span class="p">(</span><span class="s1">&#39;kristi&#39;</span><span class="p">,</span> <span class="s1">&#39;gourlay&#39;</span><span class="p">)</span>
+<p>The first thing I do with a dataset is some basic EDA. This includes checking to see whether there are null values: sky.isnull().sum(). The Skyserver dataset is very clean and there are no null values. However, with XGBoost, even if there were null values, XGBoost has a built in algorithm to impute these missing values. Its algorithm automatically learns what is the best imputation value for missing values based on training. This is one key advantage of using XGBoost. </p>
+<p>Before I am ready to model, I will prepare my dataset, by labeling the 3 items in the target column - 'star', 'galaxy', 'qso'. Then I will drop unnecessary columns, and assign my y(target) and X(features).</p>
+<div class="highlight"><pre><span></span><span class="n">sky</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sky</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="s1">&#39;STAR&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GALAXY&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;QSO&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>(&#39;gourlay&#39;, &#39;kristi&#39;)
+<div class="highlight"><pre><span></span><span class="n">sky</span> <span class="o">=</span> <span class="n">sky</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;objid&#39;</span><span class="p">,</span> <span class="s1">&#39;rerun&#39;</span><span class="p">,</span> <span class="s1">&#39;mjd&#39;</span><span class="p">])</span> 
+<span class="c1">#drop &#39;objid&#39; because irrelevant to model and &#39;rerun&#39; because it has the same value for each row.</span>
 </pre></div>
 
 
-<p>OR</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">adder</span><span class="p">(</span><span class="n">number1</span><span class="p">,</span> <span class="n">number2</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">number1</span> <span class="o">+</span> <span class="n">number2</span>
+<div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">sky</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">sky</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">adder</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">data_dmatrix</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">DMatrix</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> 
+<span class="c1">#DMatrix is an internal data structure used in XGBoost. It is recommended as it is optimal for memory and speed.</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>5
+<div class="highlight"><pre><span></span>/anaconda3/lib/python3.6/site-packages/xgboost/core.py:587: FutureWarning: Series.base is deprecated and will be removed in a future version
+  if getattr(data, &#39;base&#39;, None) is not None and \
+/anaconda3/lib/python3.6/site-packages/xgboost/core.py:588: FutureWarning: Series.base is deprecated and will be removed in a future version
+  data.base is not None and isinstance(data, np.ndarray) \
 </pre></div>
 
 
-<p>They get slightly more difficult when you're asked to count something or create a list. </p>
-<p>Consider the following function that counts the vowels in a provided word.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vowel_counter</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="n">vowels</span> <span class="o">=</span> <span class="s1">&#39;aeiou&#39;</span>
-    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">word</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">vowels</span><span class="p">:</span>
-                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">return</span> <span class="n">counter</span>
+<p>Having completed basic EDA, assigned our X and y, and created a data dmatrix, we are ready to split out data into training and testing sets and use DataFrameMapper, StandardScaler and LabelBinarizer to prepare our data. We do not need to worry about imputing at this point, because as stated above, in addition to the dataset being clean of missing values, XGBoost has a built in imputer that deals with missing values.</p>
+<div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">vowel_counter</span><span class="p">(</span><span class="s1">&#39;elephant&#39;</span><span class="p">)</span>
+<p>Obviously a key difference between XGBoost and CatBoost is how each deals with categorical columns. I'll discuss CatBoost later, but for now, as is shown below, for XGBoost, categorical columns need to be one hot encoded, using LabelBinarizer. Knowing that creating dummy columns, in many instances, could expand datasets to unimaginable sizes, the XGBoost developers introduced a built-in method to deal with this, called Automatic Sparse Data Optimization. The developers chose to handle this in the same way that they handled the existence of missing values, by making the algorithm aware of the sparsity pattern in the dataset. By only visiting the present values, and not the missing values and zeroes; it exploits the sparsity and learns the best directions to handle missing values. It handles all cases of sparsity in a unified way. </p>
+<div class="highlight"><pre><span></span><span class="n">mapper</span> <span class="o">=</span> <span class="n">DataFrameMapper</span><span class="p">([</span>
+    <span class="p">([</span><span class="s1">&#39;ra&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;dec&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;u&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;i&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">(</span><span class="s1">&#39;camcol&#39;</span><span class="p">,</span> <span class="n">LabelBinarizer</span><span class="p">()),</span>
+    <span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="n">LabelBinarizer</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;specobjid&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;redshift&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">(</span><span class="s1">&#39;plate&#39;</span><span class="p">,</span> <span class="n">LabelBinarizer</span><span class="p">()),</span>
+    <span class="p">(</span><span class="s1">&#39;fiberid&#39;</span><span class="p">,</span> <span class="n">LabelBinarizer</span><span class="p">()),</span>
+<span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">df_out</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">Z_train</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">Z_val</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_val</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>1
+<div class="highlight"><pre><span></span>/anaconda3/lib/python3.6/site-packages/sklearn/utils/validation.py:595: DataConversionWarning: Data with input dtype int64 was converted to float64 by StandardScaler.
+  warnings.warn(msg, DataConversionWarning)
+/anaconda3/lib/python3.6/site-packages/sklearn/utils/validation.py:595: DataConversionWarning: Data with input dtype int64 was converted to float64 by StandardScaler.
+  warnings.warn(msg, DataConversionWarning)
+/anaconda3/lib/python3.6/site-packages/sklearn/utils/validation.py:595: DataConversionWarning: Data with input dtype int64 was converted to float64 by StandardScaler.
+  warnings.warn(msg, DataConversionWarning)
 </pre></div>
 
 
-<p>WAIT! That's not right!</p>
-<p>Lesson One: Make sure the return is outside the loop!
-This placement of the return call had me pulling my hair out for the entire first week. I could not understand why my functions, that looked just like my classmates' functions, were not working. </p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vowel_counter</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="n">vowels</span> <span class="o">=</span> <span class="s1">&#39;aeiou&#39;</span>
-    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">word</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">vowels</span><span class="p">:</span>
-                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">counter</span>
+<p>Now it's time to model, predict, and score!</p>
+<div class="highlight"><pre><span></span><span class="n">model1</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">(</span>
+    <span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="c1">#How many trees.</span>
+    <span class="n">num_class</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="c1">#Identifying there are 3 classes in our target</span>
+    <span class="n">objective</span> <span class="o">=</span> <span class="s1">&#39;reg:logistic&#39;</span><span class="p">,</span> <span class="c1">#Objective refers to which model you want to use.</span>
+    <span class="n">eval_set</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">,</span> <span class="c1">#Eval_set refers to how you want your model to be evaluated.</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="c1">#Learning_rate has to do with how much you want each tree to learn.</span>
+    <span class="n">early_stopping_rounds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="c1">#stop after ten iterations if no improvements have been made.</span>
+                <span class="c1">#Having a large number of trees can lead to overfitting so having stopping criteria is necessary.</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1">#Smaller trees are more interpretable</span>
+    <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c1">#Silent deals with whether we want information for each iteration to be printed out.</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">vowel_counter</span><span class="p">(</span><span class="s1">&#39;elephant&#39;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">model1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>3
+<div class="highlight"><pre><span></span>XGBClassifier(base_score=0.5, booster=&#39;gbtree&#39;, colsample_bylevel=1,
+       colsample_bytree=1, early_stopping_rounds=10, eval_set=&#39;Accuracy&#39;,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=500, n_jobs=1,
+       nthread=None, num_class=3, objective=&#39;multi:softprob&#39;,
+       random_state=0, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+       seed=None, silent=False, subsample=1)
 </pre></div>
 
 
-<p>While writing a simple function is easy, the next step is learning to write a function that can be used on data or a dictionary. I struggled with this in our first lab.</p>
-<p>Below I have created a dictionary of tv shows:</p>
-<div class="highlight"><pre><span></span><span class="n">tvshows</span> <span class="o">=</span> <span class="p">[</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;curb your enthusiasm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;comedy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;hbo&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;the wire&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;drama&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;hbo&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;shameless&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;dramedy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;showtime&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;the sopranos&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;drama&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;hbo&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;game of thrones&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;drama&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;hbo&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;house of cards&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;drama&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;netflix&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;kimmy schmidt&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;comedy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;netflix&#39;</span>
-<span class="p">}]</span>
-
-<span class="k">print</span><span class="p">(</span><span class="n">tvshows</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">preds</span> <span class="o">=</span> <span class="n">model1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Z_val</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>[{&#39;name&#39;: &#39;curb your enthusiasm&#39;, &#39;category&#39;: &#39;comedy&#39;, &#39;network&#39;: &#39;hbo&#39;}, {&#39;name&#39;: &#39;the wire&#39;, &#39;category&#39;: &#39;drama&#39;, &#39;network&#39;: &#39;hbo&#39;}, {&#39;name&#39;: &#39;shameless&#39;, &#39;category&#39;: &#39;dramedy&#39;, &#39;network&#39;: &#39;showtime&#39;}, {&#39;name&#39;: &#39;the sopranos&#39;, &#39;category&#39;: &#39;drama&#39;, &#39;network&#39;: &#39;hbo&#39;}, {&#39;name&#39;: &#39;game of thrones&#39;, &#39;category&#39;: &#39;drama&#39;, &#39;network&#39;: &#39;hbo&#39;}, {&#39;name&#39;: &#39;house of cards&#39;, &#39;category&#39;: &#39;drama&#39;, &#39;network&#39;: &#39;netflix&#39;}, {&#39;name&#39;: &#39;kimmy schmidt&#39;, &#39;category&#39;: &#39;comedy&#39;, &#39;network&#39;: &#39;netflix&#39;}]
+<div class="highlight"><pre><span></span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span>
 </pre></div>
 
 
-<p>For example, I want to make a function to iterate through the dictionary and return all the shows that are from a specific network.</p>
-<p>The first step is to create a 'for loop' OR use a 'list comprehension' to write what you want to get back. </p>
-<p>In this instance, I would like to see all the tv show names that are on the HBO network.</p>
-<p>Name a function and pass it two arguments. 
-1)what you are going to iterate through.
-2)what you are looking for.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">tv_net</span><span class="p">(</span><span class="n">dictionary</span><span class="o">=</span><span class="s1">&#39;tvshows&#39;</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="s1">&#39;hbo&#39;</span><span class="p">):</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">tv</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">tv</span> <span class="ow">in</span> <span class="n">dictionary</span> <span class="k">if</span> <span class="n">tv</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">network</span><span class="p">]</span>
-
-<span class="n">tv_net</span><span class="p">(</span><span class="n">tvshows</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>0.01
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>[&#39;curb your enthusiasm&#39;, &#39;the wire&#39;, &#39;the sopranos&#39;, &#39;game of thrones&#39;]
+<p>Another key feature is that there is a built-in cross validation. This runs a cross validation at each iteration of the boosting process.</p>
+<div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;colsample_bytree&#39;</span><span class="p">:</span> <span class="s1">&#39;0.3&#39;</span><span class="p">,</span> <span class="c1">#the fraction of columns to be randomly sampled for each tree.</span>
+        <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="s1">&#39;0.2&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="c1">#the maximum depth of a tree</span>
+        <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="s1">&#39;10&#39;</span><span class="p">}</span> <span class="c1">#L1 regularization weight - Lasso</span>
+
+<span class="n">cross_val_results</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">cv</span><span class="p">(</span><span class="n">dtrain</span><span class="o">=</span><span class="n">data_dmatrix</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span> <span class="c1">#this is where the dmatrix comes in handy.</span>
 </pre></div>
 
 
-<p>Since I set the second argument default to hbo, the function automatically looks for shows from the HBO network. Setting a default argument makes life easier, and helps you remember what type of argument you will be looking for. If I wanted to change the network argument, it's as simple as passing a different network through.</p>
-<div class="highlight"><pre><span></span><span class="n">tv_net</span><span class="p">(</span><span class="n">tvshows</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="s1">&#39;netflix&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[&#39;house of cards&#39;, &#39;kimmy schmidt&#39;]
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="n">tv_net</span><span class="p">(</span><span class="n">tvshows</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="s1">&#39;showtime&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[&#39;shameless&#39;]
-</pre></div>
-
-
-<p>The important thing I learned from this process was the fact that you can then take the function you made and use it on similar data later in your code. For example, say I was then provided with a dictionary of prime time tv shows.</p>
-<div class="highlight"><pre><span></span><span class="n">primetime</span> <span class="o">=</span> <span class="p">[</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;this is us&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;drama&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;nbc&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;family guy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;comedy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;fox&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;the good place&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;comedy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;nbc&#39;</span>
-<span class="p">},</span>
-<span class="p">{</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;the office&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;comedy&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;nbc&#39;</span>
-<span class="p">}</span>
-<span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="n">tv_net</span><span class="p">(</span><span class="n">primetime</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="s1">&#39;nbc&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[&#39;this is us&#39;, &#39;the good place&#39;, &#39;the office&#39;]
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="n">tv_net</span><span class="p">(</span><span class="n">primetime</span><span class="p">,</span> <span class="s1">&#39;fox&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[&#39;family guy&#39;]
-</pre></div>
-
-
-<p>This importance of using functions to iterate through data and dictionaries resurfaces in EDA. If we are looking at a set of data and need to change something about it, and we may need to make similar changes later in our code, it's practical to create a function.
-To show this, I will use the tvshow sets from above. (First I will need to place them in a Data Frame)</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-
-<span class="n">tvshows</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tvshows</span><span class="p">)</span>
-<span class="n">primetime</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">primetime</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="n">tvshows</span>
+<div class="highlight"><pre><span></span><span class="n">cross_val_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
 
@@ -241,69 +176,218 @@ To show this, I will use the tvshow sets from above. (First I will need to place
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>category</th>
-      <th>name</th>
-      <th>network</th>
+      <th>train-rmse-mean</th>
+      <th>train-rmse-std</th>
+      <th>test-rmse-mean</th>
+      <th>test-rmse-std</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>comedy</td>
-      <td>curb your enthusiasm</td>
-      <td>hbo</td>
+      <td>0.615842</td>
+      <td>0.001887</td>
+      <td>0.617878</td>
+      <td>0.001618</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>drama</td>
-      <td>the wire</td>
-      <td>hbo</td>
+      <td>0.514400</td>
+      <td>0.023372</td>
+      <td>0.517281</td>
+      <td>0.024252</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>dramedy</td>
-      <td>shameless</td>
-      <td>showtime</td>
+      <td>0.456278</td>
+      <td>0.013461</td>
+      <td>0.460037</td>
+      <td>0.015424</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>drama</td>
-      <td>the sopranos</td>
-      <td>hbo</td>
+      <td>0.420923</td>
+      <td>0.006550</td>
+      <td>0.426109</td>
+      <td>0.009830</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>drama</td>
-      <td>game of thrones</td>
-      <td>hbo</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>drama</td>
-      <td>house of cards</td>
-      <td>netflix</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>comedy</td>
-      <td>kimmy schmidt</td>
-      <td>netflix</td>
+      <td>0.385381</td>
+      <td>0.030245</td>
+      <td>0.391525</td>
+      <td>0.033427</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<p>When we look at the dataframe for tvshows, we notice that the category and the name columns need to be swapped. We could run a simple list command, but since we know we have other similar data, it may be easier to create a function so that we don't have to repeat these verbose commands later.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">swap_col</span><span class="p">(</span><span class="n">dataframe</span><span class="p">):</span>
-    <span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">cols</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">),</span> <span class="n">cols</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
-    <span class="n">cols</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">cols</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">cols</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
-    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">dataframe</span>
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">((</span><span class="n">cross_val_results</span><span class="p">[</span><span class="s2">&quot;test-rmse-mean&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">swap_col</span><span class="p">(</span><span class="n">tvshows</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>9    0.281167
+Name: test-rmse-mean, dtype: float64
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">xgreg</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">dtrain</span><span class="o">=</span><span class="n">data_dmatrix</span><span class="p">,</span> <span class="n">num_boost_round</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+
+
+<p>A benefit of using boosting is that it provides you with feature importance. It provides you with a score which indicates how valuable a feature was in the construction of the boosted decision tree. The more a certain feature is used to make key decisions in the decision tree, the higher its importance. Importance is calculated by the the amount that each split point improves the overall tree, weighted over the number of observations it is resposible for.</p>
+<div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+<span class="n">plot_importance</span><span class="p">(</span><span class="n">model1</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="images/blog_3_24_0.png"></p>
+<p>As can be viewed by the chart, Redshift is by the far the most important feature.</p>
+<p>XGBoost also provides the ability to peak into your model and inspect a tree. </p>
+<div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">xgreg</span><span class="p">,</span> <span class="n">num_trees</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="images/blog_3_26_0.png"></p>
+<p>Above you can see how a decision tree on this data looks. You can see that it is assymetrical, which is an important point of comparison with CatBoost's trees. One interesting aspect about this tree is the fact that you can see that the algorithm has chosen to impute all 'missing' values with the direction of yes. </p>
+<p>According to XGBoost's documentation, website, and papers given by founder, Tianqi Chen, in addition to the features described above, XGBoost's power also comes from its 'Block structures for parallel learning', 'Cache Awareness', and 'Out of Core Computing'. Data is sorted and stored in memory units called blocks. This allows the data to easily be re-used in later iterations, instead of the data having to be computed again. The data in each block is stored in a compressed column format, and with one scan of the block, the statistics for the split candidates can be found. Cache awareness is the existence of internal buffers where gradient stats can be stored. Out of core computing allows optimized disk space and maximized usage when dealing with datasets that are too large to fit in memory.</p>
+<p>The one area where XGBoost is lacking is in feature engineering and hyper-parameter tuning. Chen, and the XGBoost team however, believe this is fine, as these areas are deeply integrated within coding programs. After reading documentation and several data science blogs on boosting systems, I see that there is an ability to grid search to find the best parameters. However, considering these boosting frameworks are designed for extremely large datasets, if we were to grid search one of these files, it would be computationally expensive, and time consuming. (Running a basic cross-validation ran almost 15 minutes). In order to improve a model, hyper-tuning is necessary, but it's hard to determine which parameters should be tuned and what the ideal value of each should be. </p>
+<p># CATBOOST</p>
+<p>CatBoost is another open-source gradient boosting on decision trees library. CatBoost's claim to fame is its categorical feature support. Instead of having to take care of one-hot-encoding during pre-processing the data, the CatBoost algorithm handles categorical columns while training the data. </p>
+<p>I'm now going to use DataFrameMapper and StandardScaler to prepare the rest of the data. Following this, I will pass the categorical features, while fitting the model.</p>
+<div class="highlight"><pre><span></span><span class="n">mapper2</span> <span class="o">=</span> <span class="n">DataFrameMapper</span><span class="p">([</span>
+    <span class="p">([</span><span class="s1">&#39;ra&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;dec&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;u&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;i&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;specobjid&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">([</span><span class="s1">&#39;redshift&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+<span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">df_out</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">Z_train2</span> <span class="o">=</span> <span class="n">mapper2</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">Z_val2</span> <span class="o">=</span> <span class="n">mapper2</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_val</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>/anaconda3/lib/python3.6/site-packages/sklearn/utils/validation.py:595: DataConversionWarning: Data with input dtype int64 was converted to float64 by StandardScaler.
+  warnings.warn(msg, DataConversionWarning)
+/anaconda3/lib/python3.6/site-packages/sklearn/utils/validation.py:595: DataConversionWarning: Data with input dtype int64 was converted to float64 by StandardScaler.
+  warnings.warn(msg, DataConversionWarning)
+/anaconda3/lib/python3.6/site-packages/sklearn/utils/validation.py:595: DataConversionWarning: Data with input dtype int64 was converted to float64 by StandardScaler.
+  warnings.warn(msg, DataConversionWarning)
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># categorical_features = list(range(0, X.shape[1]))</span>
+<span class="n">categorical_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Z_train2</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">categorical_features</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>[10 11 12 13]
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">model2</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
+    <span class="n">iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">early_stopping_rounds</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">loss_function</span> <span class="o">=</span> <span class="s1">&#39;MultiClass&#39;</span><span class="p">,</span> <span class="c1">#For 2-class classification, we should use &quot;Logloss&quot; or &quot;Entropy&quot;</span>
+    <span class="n">custom_metric</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">,</span>
+    <span class="n">use_best_model</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">5</span> <span class="c1">#information is printed out at every fifth iteration</span>
+<span class="p">)</span>
+<span class="n">model2</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
+    <span class="n">eval_set</span><span class="o">=</span><span class="p">(</span><span class="n">Z_val2</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
+    <span class="n">plot</span><span class="o">=</span><span class="bp">False</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="mi">0</span><span class="o">:</span>  <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.4231271</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.4268821</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.4268821</span> <span class="o">(</span><span class="mi">0</span><span class="o">)</span>    <span class="n">total</span><span class="o">:</span> <span class="mf">64.9</span><span class="n">ms</span>   <span class="n">remaining</span><span class="o">:</span> <span class="mf">6.42</span><span class="n">s</span>
+<span class="mi">5</span><span class="o">:</span>  <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0695255</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0717988</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0717988</span> <span class="o">(</span><span class="mi">5</span><span class="o">)</span>    <span class="n">total</span><span class="o">:</span> <span class="mi">375</span><span class="n">ms</span>    <span class="n">remaining</span><span class="o">:</span> <span class="mf">5.88</span><span class="n">s</span>
+<span class="mi">10</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0461552</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0538007</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0538007</span> <span class="o">(</span><span class="mi">10</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mi">906</span><span class="n">ms</span>    <span class="n">remaining</span><span class="o">:</span> <span class="mf">7.33</span><span class="n">s</span>
+<span class="mi">15</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0407958</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0510322</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0508512</span> <span class="o">(</span><span class="mi">14</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mf">1.5</span><span class="n">s</span> <span class="n">remaining</span><span class="o">:</span> <span class="mf">7.87</span><span class="n">s</span>
+<span class="mi">20</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0350664</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0461989</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0461989</span> <span class="o">(</span><span class="mi">20</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mf">2.13</span><span class="n">s</span>    <span class="n">remaining</span><span class="o">:</span> <span class="mi">8</span><span class="n">s</span>
+<span class="mi">25</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0315475</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0459406</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0459406</span> <span class="o">(</span><span class="mi">25</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mf">2.73</span><span class="n">s</span>    <span class="n">remaining</span><span class="o">:</span> <span class="mf">7.76</span><span class="n">s</span>
+<span class="mi">30</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0272609</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0449078</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0449078</span> <span class="o">(</span><span class="mi">30</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mf">3.31</span><span class="n">s</span>    <span class="n">remaining</span><span class="o">:</span> <span class="mf">7.38</span><span class="n">s</span>
+<span class="mi">35</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0247762</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0422198</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0421584</span> <span class="o">(</span><span class="mi">34</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mf">3.9</span><span class="n">s</span> <span class="n">remaining</span><span class="o">:</span> <span class="mf">6.93</span><span class="n">s</span>
+<span class="mi">40</span><span class="o">:</span> <span class="n">learn</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0233293</span>   <span class="n">test</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0422688</span>    <span class="n">best</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0421584</span> <span class="o">(</span><span class="mi">34</span><span class="o">)</span>   <span class="n">total</span><span class="o">:</span> <span class="mf">4.51</span><span class="n">s</span>    <span class="n">remaining</span><span class="o">:</span> <span class="mf">6.49</span><span class="n">s</span>
+<span class="n">Stopped</span> <span class="n">by</span> <span class="n">overfitting</span> <span class="n">detector</span>  <span class="o">(</span><span class="mi">10</span> <span class="n">iterations</span> <span class="n">wait</span><span class="o">)</span>
+
+<span class="n">bestTest</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.04215835272</span>
+<span class="n">bestIteration</span> <span class="o">=</span> <span class="mi">34</span>
+
+<span class="n">Shrink</span> <span class="n">model</span> <span class="n">to</span> <span class="n">first</span> <span class="mi">35</span> <span class="n">iterations</span><span class="o">.</span>
+
+
+
+
+
+<span class="o">&lt;</span><span class="n">catboost</span><span class="o">.</span><span class="na">core</span><span class="o">.</span><span class="na">CatBoostClassifier</span> <span class="n">at</span> <span class="mh">0x1c190eee48</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p><img alt="catboost" src="/images/newplot1.png"></p>
+<p>A great feature of CatBoost is it provides information at points specified in your params (above was 'verbose = 5').</p>
+<div class="highlight"><pre><span></span><span class="n">model2</span><span class="o">.</span><span class="n">tree_count_</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>35
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">model2</span><span class="o">.</span><span class="n">predict_proba</span>
+<span class="k">print</span><span class="p">(</span><span class="n">model2</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">Z_val2</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">[[4.01704757e-04 9.80671060e-01 1.89272355e-02]</span>
+ <span class="k">[3.08763482e-04 9.96511522e-01 3.17971463e-03]</span>
+ <span class="k">[3.89049775e-04 9.98622853e-01 9.88097567e-04]</span>
+ <span class="na">...</span>
+ <span class="k">[9.97135061e-01 2.57287349e-03 2.92065282e-04]</span>
+ <span class="k">[9.96680305e-01 2.99639694e-03 3.23297602e-04]</span>
+ <span class="k">[2.87351792e-04 9.95101706e-01 4.61094214e-03]]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">predictions2</span> <span class="o">=</span> <span class="n">model2</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">Z_val2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Like XGBoost, CatBoost also includes an early stopping round. In my model, I set this parameter to 10. This means that if no improvement has been made after 10 trees, the model will stop running. This helps prevent against over fitting. CatBoost also, like XG Boost, has a built in cross-validation.</p>
+<div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss_function&#39;</span><span class="p">:</span> <span class="s1">&#39;MultiClass&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;custom_loss&#39;</span><span class="p">:</span> <span class="s1">&#39;AUC&#39;</span>
+         <span class="p">}</span>
+
+<span class="n">cross_val_results2</span> <span class="o">=</span> <span class="n">cv</span><span class="p">(</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">),</span>
+            <span class="n">fold_count</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="c1">#number of folds to split the data into.</span>
+            <span class="n">inverted</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+            <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="c1">#data is randomly shuffled before splitting.</span>
+            <span class="n">partition_random_seed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">plot</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+            <span class="n">stratified</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+            <span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">cross_val_results2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
 
@@ -325,234 +409,242 @@ To show this, I will use the tvshow sets from above. (First I will need to place
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>name</th>
-      <th>category</th>
-      <th>network</th>
+      <th>iterations</th>
+      <th>test-MultiClass-mean</th>
+      <th>test-MultiClass-std</th>
+      <th>train-MultiClass-mean</th>
+      <th>train-MultiClass-std</th>
+      <th>test-AUC:class=0-mean</th>
+      <th>test-AUC:class=0-std</th>
+      <th>test-AUC:class=1-mean</th>
+      <th>test-AUC:class=1-std</th>
+      <th>test-AUC:class=2-mean</th>
+      <th>test-AUC:class=2-std</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>curb your enthusiasm</td>
-      <td>comedy</td>
-      <td>hbo</td>
+      <td>0</td>
+      <td>-1.042713</td>
+      <td>0.000341</td>
+      <td>-1.042747</td>
+      <td>0.000093</td>
+      <td>0.992025</td>
+      <td>0.003681</td>
+      <td>0.985580</td>
+      <td>0.003899</td>
+      <td>0.982720</td>
+      <td>0.005111</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>the wire</td>
-      <td>drama</td>
-      <td>hbo</td>
+      <td>1</td>
+      <td>-0.992463</td>
+      <td>0.001261</td>
+      <td>-0.992504</td>
+      <td>0.001639</td>
+      <td>0.997906</td>
+      <td>0.001791</td>
+      <td>0.992262</td>
+      <td>0.002721</td>
+      <td>0.984138</td>
+      <td>0.005245</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>shameless</td>
-      <td>dramedy</td>
-      <td>showtime</td>
+      <td>2</td>
+      <td>-0.946050</td>
+      <td>0.000323</td>
+      <td>-0.945929</td>
+      <td>0.000795</td>
+      <td>0.997925</td>
+      <td>0.001205</td>
+      <td>0.993606</td>
+      <td>0.002700</td>
+      <td>0.988726</td>
+      <td>0.003737</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>the sopranos</td>
-      <td>drama</td>
-      <td>hbo</td>
+      <td>3</td>
+      <td>-0.903349</td>
+      <td>0.000100</td>
+      <td>-0.903072</td>
+      <td>0.000699</td>
+      <td>0.998220</td>
+      <td>0.001502</td>
+      <td>0.993857</td>
+      <td>0.003076</td>
+      <td>0.988547</td>
+      <td>0.003624</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>game of thrones</td>
-      <td>drama</td>
-      <td>hbo</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>house of cards</td>
-      <td>drama</td>
-      <td>netflix</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>kimmy schmidt</td>
-      <td>comedy</td>
-      <td>netflix</td>
+      <td>4</td>
+      <td>-0.863164</td>
+      <td>0.000607</td>
+      <td>-0.863020</td>
+      <td>0.000325</td>
+      <td>0.998217</td>
+      <td>0.001357</td>
+      <td>0.994078</td>
+      <td>0.002699</td>
+      <td>0.988690</td>
+      <td>0.003612</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<p>Now we import our other dataframe and we see the same item that needs to be fixed. </p>
-<div class="highlight"><pre><span></span><span class="n">primetime</span>
+<p>Also similar to XGBoost, CatBoost provides the user with feature importance. By calling on 'get_feature_importance', the user can see what the model learned about the features and which of them have the greatest influence on the decisions trees.</p>
+<div class="highlight"><pre><span></span><span class="n">fstrs</span> <span class="o">=</span> <span class="n">model2</span><span class="o">.</span><span class="n">get_feature_importance</span><span class="p">(</span><span class="n">prettified</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>category</th>
-      <th>name</th>
-      <th>network</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>drama</td>
-      <td>this is us</td>
-      <td>nbc</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>comedy</td>
-      <td>family guy</td>
-      <td>fox</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>comedy</td>
-      <td>the good place</td>
-      <td>nbc</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>comedy</td>
-      <td>the office</td>
-      <td>nbc</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-<div class="highlight"><pre><span></span><span class="n">swap_col</span><span class="p">(</span><span class="n">primetime</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="p">{</span><span class="n">feature_name</span> <span class="p">:</span> <span class="n">value</span> <span class="k">for</span>  <span class="n">feature_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fstrs</span><span class="p">}</span>
 </pre></div>
 
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>category</th>
-      <th>network</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>this is us</td>
-      <td>drama</td>
-      <td>nbc</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>family guy</td>
-      <td>comedy</td>
-      <td>fox</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>the good place</td>
-      <td>comedy</td>
-      <td>nbc</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>the office</td>
-      <td>comedy</td>
-      <td>nbc</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-<p>The ability to make a function to fix mistakes in your data becomes a useful skill to have. It will be a time saver, and that's one of the reasons why learning functions is quite important for Data Science. </p>
-<p>One last point.</p>
-<p>I've shown how functions become important when both analyzing and fixing your data. Sometimes you might need your function to include multiple steps and the sheer volume may seem daunting. The number one tip, I have taken away in my first three weeks learning Python is to break things down. If you take everything step by step and work your way up to the return you need, the task becomes much easier.</p>
-<p>It's easier to do many smaller pieces of the whole, than to tackle the whole.</p>
-<p>STEP ONE: DONT GET OVERWHELMED!</p>
-<p>STEP TWO: SIMPLY WRITE DOWN WHAT THE FUNCTION NEEDS TO DO/RETURN</p>
-<p>STEP THREE: WRITE DOWN IN ORDER WHAT YOU NEED TO DO TO GET THE DESIRED RETURN</p>
-<p>The perfect example of this breaking down a function was presented to me in our first project. We were asked to analyze SAT and ACT data. At one point in the assignment, we were asked to design a function that returns the standard deviation for a column. This question took me 10x longer than any other question, because I kept thinking about the final product. Eventually, I realised I needed to follow the three steps laid out above.</p>
-<p>After calming myself down, I answered STEP TWO. The function needs to return the standard deviation of a column in the SAT/ACT dataset. </p>
-<p>STEP THREE: How do you calculate standard deviation?
-1. Calculate the mean</p>
-<div class="highlight"><pre><span></span>mean = sum(column) / len(column)
+<div class="highlight"><pre><span></span>{&#39;redshift&#39;: 78.69840467429411,
+ &#39;i&#39;: 8.742787892612705,
+ &#39;u&#39;: 3.487814704869871,
+ &#39;specobjid&#39;: 2.0436652601559193,
+ &#39;plate&#39;: 1.8955707345778037,
+ &#39;z&#39;: 1.42498154722369,
+ &#39;field&#39;: 0.9011905403991105,
+ &#39;run&#39;: 0.7856686087514119,
+ &#39;fiberid&#39;: 0.48419622387041755,
+ &#39;dec&#39;: 0.40877000998928603,
+ &#39;g&#39;: 0.3113040809109803,
+ &#39;ra&#39;: 0.3112717293491661,
+ &#39;r&#39;: 0.25950045766926433,
+ &#39;camcol&#39;: 0.24487353532627085}
 </pre></div>
 
 
-<ol>
-<li>
-<p>For each number, subtract the mean and square the results</p>
-<div class="highlight"><pre><span></span>((n - (sum(column) / len(column)))**2)
+<p>While XGBoost had the ability to use matplotlib to plot, Catboost's equivalent is brought to us by shap.</p>
+<div class="highlight"><pre><span></span><span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">model2</span><span class="p">)</span>
+<span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">Pool</span><span class="p">(</span><span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">))</span>
 </pre></div>
 
 
-</li>
-<li>
-<p>Find the mean of those squared differences( START A LIST before the math. new_list = [] )</p>
-<p>new_list.append(((n - (sum(column) / len(column)))**2))</p>
-</li>
-<li>
-<p>Take the square root of that list</p>
-<p>math.sqrt(((sum(new_list))) / (len(column) - 1))</p>
-</li>
-</ol>
-<p>Start with the first thing you need to do and slowly add what you need next. The result is:   </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
-
-<span class="k">def</span> <span class="nf">calc_std</span><span class="p">(</span><span class="n">column</span><span class="p">):</span>
-    <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">column</span><span class="p">:</span>
-        <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span> <span class="o">-</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">column</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="nb">sum</span><span class="p">(</span><span class="n">new_list</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+<div class="highlight"><pre><span></span>/anaconda3/lib/python3.6/site-packages/catboost/core.py:1697: UserWarning: &#39;fstr_type&#39; parameter will be deprecated soon, use &#39;type&#39; parameter instead
+  warnings.warn(&quot;&#39;fstr_type&#39; parameter will be deprecated soon, use &#39;type&#39; parameter instead&quot;)
+The model has complex ctrs, so the SHAP values will be calculated approximately.
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">column</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<div class="highlight"><pre><span></span><span class="n">explainer</span><span class="o">.</span><span class="n">expected_value</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">calc_std</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+<p>[0.10654885020023455, 1.5818176696303439, -1.6883665198535525]</p>
+<div class="highlight"><pre><span></span><span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="n">Z_train2</span><span class="p">,</span> <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>2.416461403433896
+<p><img alt="png" src="images/blog_3_49_0.png"></p>
+<p>Above we've done a basic model, and we've discovered that redshift is the value that has the greatest effect on the decision trees. One of the best features about CatBoost is that we can now fine-tune parameters in order to speed up the model.</p>
+<div class="highlight"><pre><span></span><span class="n">fast_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">62</span><span class="p">,</span>
+    <span class="n">iterations</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="c1">#The default is 1000 trees. Lowering the number of trees can speed up the model. </span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="c1">#Typically, if you lower the number of trees, you should raise the learning rate.</span>
+    <span class="n">boosting_type</span><span class="o">=</span><span class="s1">&#39;Plain&#39;</span><span class="p">,</span> <span class="c1">#The default is Ordered. This prevents overfitting but is expensive in computation.</span>
+    <span class="n">bootstrap_type</span><span class="o">=</span><span class="s1">&#39;Bernoulli&#39;</span><span class="p">,</span> <span class="c1">#The default is Bayesian. Bernoulli is faster.</span>
+    <span class="n">subsample</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="c1">#less than 1 is optimal for speed.</span>
+    <span class="n">rsm</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="c1">#random subspace method speeds up the training</span>
+    <span class="n">leaf_estimation_iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="c1">#for smaller datasets this should be set at 1 or 5.</span>
+    <span class="n">max_ctr_complexity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1">#We could also set one_hot_max_size to larger than the default 2. The default 2 means that any category that has 2 </span>
+<span class="c1">#or less values will be hot encoded. The rest will be computated by catboosts algorithm. This is more computationally</span>
+<span class="c1">#expensive.</span>
+<span class="n">fast_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="bp">False</span>
+<span class="p">)</span>
 </pre></div>
 
 
-<p>Writing functions was something that I alone seemed to struggle with in my cohort. However, my focus on improving my ability to write functions, allowed me to highlight other areas in my work that I should keep an eye on. If you're code is not working, read the return for details, if you still cannot figure out what's wrong, double check these few things:
-* Placement
-* Accuracy
-* Brackets!</p>
-<p>Placement: Make sure your return is located outside the loop. But also make sure that lists and counters are located in the right place as well. If needed for the function, place the lists right below the function call.</p>
-<p>Accuracy: The amount of times my code was not working because I mis-spelt a word in one place. Spelling will always be important, not just in academia!</p>
-<p>Brackets: If in doubt look if you're missing a bracket somewhere. I spent an hour with a function not working, to realize I just needed to square bracket the argument I was submitting.</p>
-<p>Attention to detail!</p>
+<div class="highlight"><pre><span></span>&lt;catboost.core.CatBoostClassifier at 0x1c190ee080&gt;
+</pre></div>
+
+
+<p><img alt="catboost2" src="/images/newplot2.png"></p>
+<p>In addition to the above parameters that were adjusted to speed up the model's performance, there are also more parameters that can be used to fine-tune the model.</p>
+<div class="highlight"><pre><span></span><span class="n">tuned_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
+    <span class="n">iterations</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="c1"># how deep trees will go. Usually best between 1 and 10</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">l2_leaf_reg</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1">#regularizer value for Ridge regression</span>
+    <span class="n">bagging_temperature</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">one_hot_max_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1">#2 is the default value. </span>
+    <span class="n">leaf_estimation_method</span><span class="o">=</span><span class="s1">&#39;Newton&#39;</span><span class="p">,</span>
+    <span class="n">loss_function</span><span class="o">=</span><span class="s1">&#39;MultiClass&#39;</span>
+<span class="p">)</span>
+<span class="n">tuned_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">eval_set</span><span class="o">=</span><span class="p">(</span><span class="n">Z_val2</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
+    <span class="n">plot</span><span class="o">=</span><span class="bp">False</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&lt;catboost.core.CatBoostClassifier at 0x1c18c20710&gt;
+</pre></div>
+
+
+<p><img alt="catboost" src="/images/newplot3.png"></p>
+<div class="highlight"><pre><span></span><span class="n">final_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">63</span><span class="p">,</span>
+    <span class="n">iterations</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">tuned_model</span><span class="o">.</span><span class="n">tree_count_</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">final_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">100</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Learning rate set to 0.055965
+0:  learn: 0.5431275    total: 114ms    remaining: 57s
+100:    learn: 0.0057702    total: 6.07s    remaining: 24s
+200:    learn: 0.0032198    total: 11.2s    remaining: 16.7s
+300:    learn: 0.0021840    total: 16.2s    remaining: 10.7s
+400:    learn: 0.0016674    total: 21.7s    remaining: 5.36s
+499:    learn: 0.0013561    total: 26.2s    remaining: 0us
+
+
+
+
+
+&lt;catboost.core.CatBoostClassifier at 0x1c190b9ef0&gt;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">final_model</span><span class="o">.</span><span class="n">get_best_score</span><span class="p">())</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>{&#39;learn&#39;: {&#39;Logloss&#39;: 0.0013560782767138484}}
+</pre></div>
+
+
+<p>The greatest benefit of CatBoost is its ability to handle categorical features. With other boosting software, we need to preprocess data on our own. This would be done using LabelBinarizer (as shown above in the XGBoost section). Although DataFrameMapper makes this task more manageable, in some cases it may lead to datasets that are unimaginably large. In addition to combination features(combining columns), which are converted to number values (these combination features are not used in the first split, but then all will be used in the next splits), CatBoost has a special formula to convert categorical features into numbers. With CatBoost and its categorical features, the data is shuffled and a mean is calculated for every object on its historical data.</p>
+<p>ctr i = (countInClass + prior) / (totalCount + 1)</p>
+<p>CountInClass is how many times the label value was equal to i for objects with the current categorical feature value.</p>
+<p>TotalCount is the total number of objects already visited that have the same feature value as the one being visited.</p>
+<p>Prior is a constant defined by the starting parameters</p>
+<p>When it comes to missing values, CatBoost also deals with these during training. The default setting is 'Min' which means that missing values are processed as the minimum value for the feature. It is also guaranteed that a split that seperates all missing values from all other values is considered when selecting trees.</p>
+<h1>Conclusion</h1>
+<p>In addition to categorical features, another main diference between XGBoost and CatBoost is the type of decision trees used. XGBoost uses assymetric trees (which could be viewed above) while CatBoost uses oblivious trees as base predictors. An assymetric tree makes splits that will learn the most. Oblivious trees simply means that the feature used for splitting is the same accross all intermediate nodes within the same level of the tree.</p>
+<p>Overall, I find it's hard to choose the best boosting system, because both do a great job and offer great features to work with. This can be viewed by their use in winning Kaggle competition entries. However, I find CatBoost's ability to pass categorical features, instead of one-hot-encoding, novel. It saves time in preparing the data to be modeled and although more computationally expensive at first, I think with larger datasets, where one-hot-encoding could swell the dataset to enormous sizes, it would be more effective. I like the fact that it provides both options when you're fitting a model. The default is 2 - which means that if a categorical column has two or less categories it will hot encode, and if its more than 2, it will run its built-in calculation for categorical columns. Either way, categorical columns are processed internally when training the model. Thus, even if you prefer categorical columns to be one-hot-encoded, you can set the parameters accordingly and not have to pre-process these columns. </p>
+<p>It's hard to choose between the two libraries because I think they both excel with larger datasets than the one I used. However, with my computer and the SkyServer dataset, CatBoost outperformed XGBoost in speed, and I found the ability to fine-tune and speed-up the model more user-friendly and intuitive. Also I found the instant plotting more engaging, and the shap add-on, more visually appealing.</p>
  </div>
 </div>
  </div>
