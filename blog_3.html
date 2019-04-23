@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <title>Third Blog Post</title>
+ <title>Kitty Got Claws: A Comparison of CatBoost and XGBoost</title>
  <!-- Latest compiled and minified CSS -->
  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
  <div class="container">
@@ -12,10 +12,9 @@
  <div class="container">
 <div class="row">
  <div class="col-md-8">
-  <h3>Third Blog Post</h3>
+  <h3>Kitty Got Claws: A Comparison of CatBoost and XGBoost</h3>
   <label>2019-04-23</label>
-  <p>Kitty Got Claws: A Comparison of CatBoost and XGBoost</p>
-<p>Boosting is an ensemble technique where new models are created to correct the errors of past models. Each subsequent tree learns from the errors of its predecessor, as all trees are added sequentially until no further improvements can be made. Gradient boosting is an approach where new models are created from the residuals or errors of prior models and then are added together to make the final prediction. The base learners in gradient boosting are weak learners, but each contributes vital information for the final model. Two examples of these programs are XGBoost and CatBoost. They are two open-source software libraries that provide a gradient boosting framework. </p>
+  <p>Boosting is an ensemble technique where new models are created to correct the errors of past models. Each subsequent tree learns from the errors of its predecessor, as all trees are added sequentially until no further improvements can be made. Gradient boosting is an approach where new models are created from the residuals or errors of prior models and then are added together to make the final prediction. The base learners in gradient boosting are weak learners, but each contributes vital information for the final model. Two examples of these programs are XGBoost and CatBoost. They are two open-source software libraries that provide a gradient boosting framework. </p>
 <p>To compare these two programs, I will load a dataset called "Skyserver", and I will attempt to predict whether an image is a Star, Galaxy, or Quasar. I will begin with XGBoost.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span> 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -242,7 +241,7 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<p><img alt="png" src="images/blog_3_24_0.png"></p>
+<p><img alt="png" src="images/blog_3_23_0.png"></p>
 <p>As can be viewed by the chart, Redshift is by the far the most important feature.</p>
 <p>XGBoost also provides the ability to peak into your model and inspect a tree. </p>
 <div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
@@ -251,7 +250,7 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<p><img alt="png" src="images/blog_3_26_0.png"></p>
+<p><img alt="png" src="images/blog_3_25_0.png"></p>
 <p>Above you can see how a decision tree on this data looks. You can see that it is assymetrical, which is an important point of comparison with CatBoost's trees. One interesting aspect about this tree is the fact that you can see that the algorithm has chosen to impute all 'missing' values with the direction of yes. </p>
 <p>According to XGBoost's documentation, website, and papers given by founder, Tianqi Chen, in addition to the features described above, XGBoost's power also comes from its 'Block structures for parallel learning', 'Cache Awareness', and 'Out of Core Computing'. Data is sorted and stored in memory units called blocks. This allows the data to easily be re-used in later iterations, instead of the data having to be computed again. The data in each block is stored in a compressed column format, and with one scan of the block, the statistics for the split candidates can be found. Cache awareness is the existence of internal buffers where gradient stats can be stored. Out of core computing allows optimized disk space and maximized usage when dealing with datasets that are too large to fit in memory.</p>
 <p>The one area where XGBoost is lacking is in feature engineering and hyper-parameter tuning. Chen, and the XGBoost team however, believe this is fine, as these areas are deeply integrated within coding programs. After reading documentation and several data science blogs on boosting systems, I see that there is an ability to grid search to find the best parameters. However, considering these boosting frameworks are designed for extremely large datasets, if we were to grid search one of these files, it would be computationally expensive, and time consuming. (Running a basic cross-validation ran almost 15 minutes). In order to improve a model, hyper-tuning is necessary, but it's hard to determine which parameters should be tuned and what the ideal value of each should be. </p>
@@ -544,7 +543,7 @@ The model has complex ctrs, so the SHAP values will be calculated approximately.
 </pre></div>
 
 
-<p><img alt="png" src="images/blog_3_49_0.png"></p>
+<p><img alt="png" src="images/blog_3_48_0.png"></p>
 <p>Above we've done a basic model, and we've discovered that redshift is the value that has the greatest effect on the decision trees. One of the best features about CatBoost is that we can now fine-tune parameters in order to speed up the model.</p>
 <div class="highlight"><pre><span></span><span class="n">fast_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
     <span class="n">random_seed</span><span class="o">=</span><span class="mi">62</span><span class="p">,</span>
