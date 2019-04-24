@@ -1,20 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
- <title>Kitty Got Claws! A Comparison of CatBoost and XGBoost</title>
- <!-- Latest compiled and minified CSS -->
- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
- <div class="container">
-  <h1><a href="https://KristiGourlay.github.io/blog">Blog</a></h1>
- </div>
-</head>
-<body>
- <div class="container">
-<div class="row">
- <div class="col-md-8">
-  <h3>Kitty Got Claws! A Comparison of CatBoost and XGBoost</h3>
-  <label>2019-04-23</label>
-  <p>Boosting is an ensemble technique where new models are created to correct the errors of past models. Each subsequent tree learns from the errors of its predecessor, as all trees are added sequentially until no further improvements can be made. Gradient boosting is an approach where new models are created from the residuals or errors of prior models and then are added together to make the final prediction. The base learners in gradient boosting are weak learners, but each contributes vital information for the final model. Two examples of these programs are XGBoost and CatBoost. They are two open-source software libraries that provide a gradient boosting framework. </p>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Kitty Got Claws! A Comparison of CatBoost and XGBoost / Blog</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="shortcut icon" href="https://KristiGourlay.github.io/blog/theme/favicon.ico" />
+        <link rel="apple-touch-icon" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-iphone.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-ipad.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-iphone4.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-ipad3.png" />
+
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/colorbox.css">
+
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/main.css">
+
+        <script src="https://KristiGourlay.github.io/blog/theme/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div class="span9">
+                    <div class="row">
+                        <div class="span2"> <!-- logo -->
+                            <div id="logo">
+                                <a href="https://KristiGourlay.github.io/blog">
+                                    <img alt="Blog" src="https://KristiGourlay.github.io/blog/" />
+                                </a>
+                            </div> <!-- logo -->
+                        </div> <!-- logo span -->
+
+                        <div class="span7"> <!-- header -->
+                            <!--[if lt IE 9]>
+                                <p class="chromeframe alert alert-warning">You are using an <strong>outdated</strong> browser, and this site might not look best in it. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+                            <![endif]-->
+                            <header id="site-header">
+                                <div id="site-header-content">
+                                    <h1>
+                                        <a href="https://KristiGourlay.github.io/blog">Blog</a>
+                                        <small>
+                                            <span class="divider">/</span> 
+                                        </small>
+                                    </h1>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </header>
+                        </div> <!-- header span -->
+                    </div> <!-- header row -->
+
+                    <div class="row"> <!-- content -->
+                        <div class="content">
+<div class="article-page">
+    <div class="span7 offset2">
+        <header class="article">
+            <h2><a href="https://KristiGourlay.github.io/blog/blog_3.html" rel="bookmark">Kitty Got Claws! A Comparison of CatBoost and XGBoost</a></h2>
+            <time datetime="2019-04-23T10:20:00-04:00">
+                Apr 23, 2019
+            </time>
+        </header>
+    </div>
+
+    <div class="span2">
+    <div class="article-meta article-meta-border">
+        <dl class="dl-horizontal">
+            <dt><i class="icon-file"></i></dt>
+            <dd>
+                <a href="https://KristiGourlay.github.io/blog/category/misc.html">
+                    misc
+                </a>
+            </dd>
+
+            <dt><i class="icon-tags"></i></dt>
+            <dd>
+                    <a href="https://KristiGourlay.github.io/blog/tag/python.html">python</a>
+            </dd>
+        </dl>
+
+        <b class="border-notch notch"></b>
+        <b class="notch"></b>
+    </div>
+    </div>
+
+    <div class="span7">
+        <section>
+            <article class="entry">
+    <p>Boosting is an ensemble technique where new models are created to correct the errors of past models. Each subsequent tree learns from the errors of its predecessor, as all trees are added sequentially until no further improvements can be made. Gradient boosting is an approach where new models are created from the residuals or errors of prior models and then are added together to make the final prediction. The base learners in gradient boosting are weak learners, but each contributes vital information for the final model. Two examples of these programs are XGBoost and CatBoost. They are two open-source software libraries that provide a gradient boosting framework. </p>
 <p>To compare these two programs, I will load a dataset called "Skyserver", and I will attempt to predict whether an image is a Star, Galaxy, or Quasar. I will begin with XGBoost.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span> 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -636,8 +717,106 @@ final_model.fit(
 <p>In addition to categorical features, another main diference between XGBoost and CatBoost is the type of decision trees used. XGBoost uses assymetric trees (which could be viewed above) while CatBoost uses oblivious trees as base predictors. An assymetric tree makes splits that will learn the most. Oblivious trees simply means that the feature used for splitting is the same accross all intermediate nodes within the same level of the tree.</p>
 <p>Overall, I find it's hard to choose the best boosting system, because both do a great job and offer great features to work with. This can be viewed by their use in winning Kaggle competition entries. However, I find CatBoost's ability to pass categorical features, instead of one-hot-encoding, novel. It saves time in preparing the data to be modeled and although more computationally expensive at first, I think with larger datasets, where one-hot-encoding could swell the dataset to enormous sizes, it would be more effective. I like the fact that it provides both options when you're fitting a model. The default is 2 - which means that if a categorical column has two or less categories it will hot encode, and if its more than 2, it will run its built-in calculation for categorical columns. Either way, categorical columns are processed internally when training the model. Thus, even if you prefer categorical columns to be one-hot-encoded, you can set the parameters accordingly and not have to pre-process these columns. </p>
 <p>It's hard to choose between the two libraries because I think they both excel with larger datasets than the one I used. However, with my computer and the SkyServer dataset, CatBoost outperformed XGBoost in speed, and I found the ability to fine-tune and speed-up the model more user-friendly and intuitive. Also I found the instant plotting more engaging, and the shap add-on, more visually appealing.</p>
- </div>
-</div>
- </div>
-</body>
+
+            </article>
+        </section>
+    </div> <!-- span -->
+</div>                        </div>
+                    </div> <!-- content row -->
+
+                    <div class="row"> <!-- footer -->
+                        <div class="span7 offset2">
+                            <footer id="site-footer">
+                                <p>
+                                    <a href="" target="_blank">
+                                        
+                                    </a> Kristi Gourlay /
+                                    <a href="https://KristiGourlay.github.io/blog/">Archives</a>
+                                </p>
+                                <p>
+                                    Powered by
+                                    <a href="https://github.com/getpelican/pelican" target="_blank">
+                                        Pelican
+                                    </a>
+                                    /
+                                    Source code on
+                                    <a href="http://github.com/siovene/iovene.com" target="blank">
+                                        GitHub
+                                    </a>
+                                    /
+                                    Theme <code>Lannisport</code>, also on
+                                    <a href="http://github.com/siovene/lannisport" target="_blank">
+                                        GitHub
+                                    </a>
+                                </p>
+                            </footer>
+                        </div> <!-- footer span -->
+                    </div> <!-- footer row -->
+                </div> <!-- header+content+footer span -->
+
+                <div class="span3">
+                    <aside class="affix">
+                        <div id="sidebar">
+                            <div id="social-icons">
+                            </div>
+
+                            <div id="navigation">
+<nav>
+	<h2>Pages</h2>
+	<ul>
+		<li>
+			<ul>
+				<li>
+					<a href="https://KristiGourlay.github.io/blog">Blog</a>
+				</li>
+
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+<nav>
+	<h2>Categories</h2>
+	<ul>
+		<li>
+			<ul>
+					<li>
+						<a href="https://KristiGourlay.github.io/blog/category/misc.html">misc</a>
+					</li>
+			</ul>
+		</li>
+	</ul>
+</nav>                            </div>
+                        </div> <!-- sidebar -->
+
+                        <p id="back-to-top">
+                            <a href="#">
+                                <i class="icon-double-angle-up"></i> Back to top
+                            </a>
+                        </p>
+
+                    </aside>
+                </div> <!-- logo+navigation span -->
+            </div> <!-- row -->
+
+        </div> <!-- /container -->
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="https://KristiGourlay.github.io/blog/theme/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+        <script>$('body').popover || document.write('<script src="https://KristiGourlay.github.io/blog/theme/js/vendor/bootstrap.min.js"><\/script>')</script>
+
+        <script src="https://KristiGourlay.github.io/blog/theme/js/jquery.captions.js"></script>
+        <script src="https://KristiGourlay.github.io/blog/theme/js/vendor/jquery.colorbox-min.js"></script>
+
+        <script src="https://KristiGourlay.github.io/blog/theme/js/main.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount',''],['_trackPageview'],['_trackPageLoadTime'],['_gat._anonymizeIp']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
 </html>
