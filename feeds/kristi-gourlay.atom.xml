@@ -1,5 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Kristi's Blog - Kristi Gourlay</title><link href="https://KristiGourlay.github.io/blog/" rel="alternate"></link><link href="https://KristiGourlay.github.io/blog/feeds/kristi-gourlay.atom.xml" rel="self"></link><id>https://KristiGourlay.github.io/blog/</id><updated>2019-05-08T10:20:00-04:00</updated><entry><title>You Pro-BAYE-bly will FREQUENT this Post Before an Interview</title><link href="https://KristiGourlay.github.io/blog/blog_4.html" rel="alternate"></link><published>2019-05-08T10:20:00-04:00</published><updated>2019-05-08T10:20:00-04:00</updated><author><name>Kristi Gourlay</name></author><id>tag:kristigourlay.github.io,2019-05-08:/blog/blog_4.html</id><summary type="html">&lt;p&gt;Most Data Science questions deal with studying populations. A population is a set of similar items or events that are of interest for a question or an experiment. Since the task of measuring  an entire population is frequently too expensive and impractical, we take samples, and make inferences about the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Most Data Science questions deal with studying populations. A population is a set of similar items or events that are of interest for a question or an experiment. Since the task of measuring  an entire population is frequently too expensive and impractical, we take samples, and make inferences about the whole population based on the statistics we find in the sample. In statistical inference we have four key concepts:&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Kristi's Blog - Kristi Gourlay</title><link href="https://KristiGourlay.github.io/blog/" rel="alternate"></link><link href="https://KristiGourlay.github.io/blog/feeds/kristi-gourlay.atom.xml" rel="self"></link><id>https://KristiGourlay.github.io/blog/</id><updated>2019-06-04T10:20:00-04:00</updated><entry><title>OxyBeerOn: A Beer Recommender App</title><link href="https://KristiGourlay.github.io/blog/blog_5.html" rel="alternate"></link><published>2019-06-04T10:20:00-04:00</published><updated>2019-06-04T10:20:00-04:00</updated><author><name>Kristi Gourlay</name></author><id>tag:kristigourlay.github.io,2019-06-04:/blog/blog_5.html</id><summary type="html">&lt;p&gt;Last week, I finished my Data Science boot camp at Bitmaker General Assembly in Toronto. For the final two weeks, I spent my time working on my final project, known as the Capstone Project. This blog will be an overview of this project, from its inception to my presentation last …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Last week, I finished my Data Science boot camp at Bitmaker General Assembly in Toronto. For the final two weeks, I spent my time working on my final project, known as the Capstone Project. This blog will be an overview of this project, from its inception to my presentation last Thursday. For the project, I decided to make a beer recommender system. There were various reasons as to why I chose this project. First, I've been bartending for the last three years, and I've become fairly knowledgeable about beer, and have become a human recommender system in the process. Most customers are not very well-informed about the different styles of beers, and a recommender system could help people to figure out which beers they would most prefer. Second, we only spent a couple hours during the 12-week course on recommender systems, so I thought it would be a challenge to dig deeper into the area. Third, it became quite obvious when I was researching the various project ideas I had, that it was almost impossible to find examples of recommender systems online, that were not based on the MovieLens dataset. This sealed the deal for me, knowing that I would have to wrangle my own data and model without the benefit of a bevy of online examples. &lt;/p&gt;
+&lt;h1&gt;Step One: Web Scraping&lt;/h1&gt;
+&lt;p&gt;The first thing I needed to do was find my beer data. The first place I found was the website Brewery DB. Brewery DB is an online database, developed for brewers and web developers to power their apps. After purchasing an API key, I spent 4 days requesting beers from the website. The first obstacle I came accross was that unless I purchased the most expensive API key, I did not have the ability refine my scraping to breweries located in Ontario. So although I scraped 20,000+ beers from the site, after filtering down to beers from Ontario and Quebec, Macro-Breweries, and well-known breweries in the US, with beers readily available in Toronto, I was only left with about 530 beers. Because of this, I decided to supplement my data, by scraping the Top Rated 100 beers in Ontario list from the Beer Advocate website. &lt;/p&gt;
+&lt;p&gt;&lt;img src='images/beer_advocate.png' alt='beer_adv'&gt;&lt;/p&gt;
+&lt;p&gt;After scraping these two sites, and concatenating the information I wrangled, I was left with 629 beers. The next thing I needed to do was create a 'user base'. To create this database of users, I relied on two methods. The first was to create and disseminate online, a basic beer form, comprised of 20 beers, both representative of styles, and micro and macro breweries. &lt;/p&gt;
+&lt;p&gt;&lt;img src='images/beer_form.png' alt='beer_form'&gt; &lt;img src='images/beer_form2.png' alt='beer_form2'&gt;&lt;/p&gt;
+&lt;p&gt;Users were asked to rate the 20 beers on a scale from 1 to 10. In addition to this simple form, I was able to convince 14 of my friends (myself being number 15) to complete the entire list of 629 beers.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/user_spreadsheet.png' alt='users'&gt;&lt;/p&gt;
+&lt;p&gt;The final user/beer database had:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;        -86 Beer Forms filled out
+        -15 &amp;quot;Super-Users&amp;#39;
+        -338 Beers (after I deleted beers with no ratings)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The hope was that while 86 people only were able to rate 20 beers, the super users would bridge this sparsity, and similarities would be made between regular users and super-users, so that beers that the regular users had not tried could be recommended to them, based on super-user ratings.&lt;/p&gt;
+&lt;h1&gt;Step Two: Modeling&lt;/h1&gt;
+&lt;p&gt;&lt;img src='images/user_colaborative.png' alt='models'&gt;&lt;/p&gt;
+&lt;p&gt;There are three types of Recommender Systems:&lt;/p&gt;
+&lt;p&gt;Content Based. Broadly speaking, this system is based on the premise that if you like one item, you will like another similar item. In terms of beer, if you like Guinness, you will most likely like other stouts, especially ones poured with a creamer.&lt;/p&gt;
+&lt;p&gt;Collaborative Based. This system focuses on the relationship between users and items. Strictly speaking, similar people like similar items. If person A and B, like Corona, Coors Light, and Heineken, and person A loves Sawdust City Little Norway, a Collaborative Based recommender system would recommend Little Norway to person B.&lt;/p&gt;
+&lt;p&gt;Hybrid Systems. This system combines Content and Collaborative systems. For example, if person C likes imperial stouts and IPAs. And person D also likes imperial stouts, but hates IPAs, a hybrid system would recommend other imperial stouts that person C liked to person D.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/spotlight.png' alt='spotlight'&gt;&lt;/p&gt;
+&lt;p&gt;Model 1: Spotlight Recommender Model (Collaborative)&lt;/p&gt;
+&lt;p&gt;For the first model I used the Spotlight Recommender system. Spotlight was developed by Maciej Kula, and is the recommendation system used by Netflix. Spotlight provides frameworks for Sequential models, as well as, Factorization models, both Implicit and Explicit. Due to the small dataset, the Spotlight model was not able to make accurate recommendations for users. The precision at K was .18 after tuning parameters. The recommendations seemed to be skewed by the data compiling decisions I had made. For none super users, it would only recommend those 20 beers thats were part of the Beer Form.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/spotlightcode.png' alt='spotlightcode'&gt;&lt;/p&gt;
+&lt;p&gt;Model 2: KNN Model (Collaborative)&lt;/p&gt;
+&lt;p&gt;A KNN model is a non-parametric model that seperates data points into several clusters and then makes inferences for new samples by measuring the distance between the target beer and the closest beers to it. This model relies on user-item ratings.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/knn.png' alt='knn'&gt;&lt;/p&gt;
+&lt;p&gt;While a regular KNN model will try to classify a new data point by measuring the distance between the new point and all other points, and returning the K nearest neighbours. In a recommender system, the model is not trying to classify the new point, but is trying to find items with similar user-item interactions. The KNN model seemed to work quite well. The function below takes in a beer name, and will recommend 10 beers with similar user-item ratings. &lt;/p&gt;
+&lt;p&gt;&lt;img src='images/knn_code.png' alt='knn'&gt;&lt;/p&gt;
+&lt;p&gt;Using Bellwood's Double Justu as an example, the KNN model, returned the following 10 beers as recommendations (shown below). This is rather impressive when taking into account that this model does not take styles into consideration. In addition to its regular IPA version, Jutsu, it also returned Bellwood's Witchshark, Farmageddon, and Roman Candle, three of their higher percentage beers. &lt;/p&gt;
+&lt;p&gt;&lt;img src='images/find_similar_beer_function.png' alt='fsbf'&gt;&lt;/p&gt;
+&lt;p&gt;Model 3: Cosine Similarity Model (Content)&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/cosine.png' alt='cosine'&gt;&lt;/p&gt;
+&lt;p&gt;Cosine Similarity measures the similarity between two non-zero vectors. For example, two vectors that share the same orientation have a cosine similarity of 1. This method recommended beer based on similar styles. Due to the relatively small dataset, I personally mapped over 100s styles down to 31.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/cosine_code.png' alt='cc'&gt;&lt;/p&gt;
+&lt;p&gt;This model, in theory, is very simplistic. It will return beers that are similar in styles. For example, if you ask for similar beers to Heineken, the function will return these beers:&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/return_beer_function.png' alt='rbf'&gt;&lt;/p&gt;
+&lt;p&gt;Model 4: Kristi's Hybrid Model (oxybeeron.py)&lt;/p&gt;
+&lt;p&gt;My hybrid model (which is connected to the flask app), provides 10 beer recommendations based on the collaboration of the above three models. All three models above returned beer recommendations, to varying degrees of accuracy. Because of the small dataset, the Cosine Similarity model was most accurate. Thus, for the flask app, I decided to make this model more heavily weighted. However, anything that was recommended by Model 1 (Spotlight) and Model 2 (KNN), the two models based on the colaborative method, were automatically recommended, and then the final recommendation spots were filled out by Model 3 (Cosine Similarity). The flask app, allows the 'online' user to choose from a list of 10 beers; their preferences, and then this model, in turn, recommends beer based on this hybrid model.&lt;/p&gt;
+&lt;p&gt;The following are two snippets of the code used to create the final recommendations. To see the entire code used for the project, please visit &lt;a href='https://github.com/KristiGourlay/capstone_project'&gt;My GitHub&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/function1.png' alt='function1'&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/function2.png' alt='function2'&gt;&lt;/p&gt;
+&lt;h1&gt;Step Three: Flask App&lt;/h1&gt;
+&lt;p&gt;The final requirement of the project was to serve the app locally, and try to have the app more interesting that just a white page with input boxes. &lt;/p&gt;
+&lt;p&gt;I decided to create four different templates, so that if the user did not know any of the beer options, then they could refresh the page and get new options. As you can see below, the final flask app, takes 'inputs' from the site, and the two functions shown above, provide 10 recommended beers based on the input.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/flask_code.png' alt='flask_code'&gt;&lt;/p&gt;
+&lt;p&gt;The final app looked like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/flask_app_page.png' alt='flask_app_page'&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/flask_result_page.png' alt='results'&gt;&lt;/p&gt;
+&lt;h1&gt;Step Four: Taking it further!&lt;/h1&gt;
+&lt;p&gt;The more I developed this project, the more I came to realise that the sparseness of the data hindered what I could do with my modeling. While my final hybrid model recommended accurate beers using the three models (Spotlight, KNN, and Cosine Similarity), I began to realise that these three models could also be used in tandem for different configurations of data. What started as an attempt to recommend beer for my 'super-users' as a thank you for their participation, turned into another Super-User Model (also located on &lt;a href='https://github.com/KristiGourlay/capstone_project'&gt;My GitHub&lt;/a&gt;). This hybrid model is an example of how the collaboration of these three models can be manipulated to conform to different datasets. This model does not work on the entirety of the user base, but for those who filled out the entire Google Spreadsheet (my 'Super Users), this model is effective. This model relies on the top recommendations provided by Spotlight. It then fetches all the beer that a certain user rated as 8 or above and then uses the cosine similarity and KNN model functions to list content similarity and user-item interaction similarity to those specific beers. The final function takes in a user id number and then recommends the beers that are present in the Spotlight recommendations, and in the combination of the KNN and cosine similarity recommendations. This model effectively recommends beer based on similar user preferences, but also considers the users preferences for style.&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/super_function1.png' alt='sf'&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/super_function2.png' alt='sf2'&gt;&lt;/p&gt;
+&lt;h1&gt;Final Thoughts&lt;/h1&gt;
+&lt;p&gt;The oxybeeron app was a nice introduction to recommender systems. It relied more heavily on, and was more effective with, the more basic models, like KNN and Cosine Similarity. This was simply because there was not enough data for Spotlight to do its magic. However, the combination of these three models, provided a basic blueprint for a hybrid model that could be quite effective.&lt;/p&gt;
+&lt;p&gt;The effectiveness of the Cosine Similarity Model with only 31 beer styles, makes me optimistic about its potential in a larger dataset where the number of beer styles could be more expansive. For example, instead of "IPAs", it could include specific IPAs (Double IPAs, Session IPAs, Vermont-Style IPAs, Black IPAs, hazy IPAs, etc.)&lt;/p&gt;
+&lt;p&gt;Overall, it became painfully obvious that it's hard to find information and examples online for recommender systems that are not based on the MovieLens dataset. I think that for Spotlight to work to the best of its ability, my dataset would need to be much larger than 101 users and 338 beers. However, the improvement in its ability to recommend beer for my super users is promising. My Super-User Model shows that in the interim between a cold start situation and a 100K+ dataset (aka MovieLens), Spotlight can be quite effective if it is combined with other recommendation algorithms. Using these three models, in tandem, resulted in the ability to make solid recommendations for users in a smaller network.&lt;/p&gt;</content><category term="python"></category></entry><entry><title>You Pro-BAYE-bly will FREQUENT this Post Before an Interview</title><link href="https://KristiGourlay.github.io/blog/blog_4.html" rel="alternate"></link><published>2019-05-08T10:20:00-04:00</published><updated>2019-05-08T10:20:00-04:00</updated><author><name>Kristi Gourlay</name></author><id>tag:kristigourlay.github.io,2019-05-08:/blog/blog_4.html</id><summary type="html">&lt;p&gt;Most Data Science questions deal with studying populations. A population is a set of similar items or events that are of interest for a question or an experiment. Since the task of measuring  an entire population is frequently too expensive and impractical, we take samples, and make inferences about the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Most Data Science questions deal with studying populations. A population is a set of similar items or events that are of interest for a question or an experiment. Since the task of measuring  an entire population is frequently too expensive and impractical, we take samples, and make inferences about the whole population based on the statistics we find in the sample. In statistical inference we have four key concepts:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;            -Samples
             -Statistics
             -Parameters
@@ -57,9 +115,7 @@
 
 &lt;p&gt;The p value is .066, thus we must accept the null hypothesis and state that there is no difference between the sleeping patterns - hours slept - between the experiment and control groups.&lt;/p&gt;
 &lt;p&gt;The third important key in Frequentist statisitics is the confidence interval. Simply put, a confidence interval is a range of values, in which the actual value is likely to fall. It represents the accuracy or precision of a given estimate. A confidence interval can be calculated as so: &lt;/p&gt;
-&lt;p&gt;$$
-\text{[sample statistic]} \pm \text{[multiplier]} \times \text{[standard deviation of sampling distribution]}
-$$&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/calculation1.png' alt='calcu1ation1'&gt;&lt;/p&gt;
 &lt;p&gt;Let's simulate a population and a poll as an example. Say we live in a state and we are working for a newspaper and we are trying to determine whether a certain proposition will pass. Unfortunately, we dont have the time, or the money, to run a poll that will reach out and question all 1 million voters. If we were to run an experiment, we would poll a sample of the society, and then use those samples to make inferences about the whole population. This is how a frequentist would tackle this situation. First I will generate statistics about the state.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
@@ -96,7 +152,7 @@ $$&lt;/p&gt;
 
 &lt;p&gt;In this scenario, the population is 1,000,000, the sample is 500 people, the statistics would be the percentage of people in the sample voting yes on the proposition, and the parameter is the true percentage of people voting yes on the proposition.&lt;/p&gt;
 &lt;p&gt;We at the newspaper, do not know that 60% of the population would vote for this proposition to pass, but by looking at a sample of 500 voters, we can make educated inferences about how the entire population may vote. This is the Central Limit Theorem in action. This is a probability theory that states that when independent random variables are added their sum tends toward a normal distribution, even if the original variables are not normally distributed. It is this theory that allows for conclusions to be made about the whole population from a sample of the population. Of the sample of the first 500 citizens who were polled, 55.4% responded that they would vote for the proposition to pass. A frequentist would then calculate the margin or error, creating the confidence interval by calculating the mean and the standard deviation and combining this with the associated Z score (1.96). The area under the standard normal distribution between -1.96 and +1.96 is 95%. The confidence interval is a set of likely values for the parameter of interest. &lt;/p&gt;
-&lt;p&gt;&lt;img src='images/1.96.jpg' alt='1.96'&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/196.jpg' alt='196'&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;sample_mean&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="n"&gt;sigma&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -128,13 +184,7 @@ $$&lt;/p&gt;
 The Likelihood is the specific observed data.
 The Posterior distribution combines the prior and the likelihood. It is the multiplication of the Likelihood and the Prior.
 The Posterior distribution is calculated by the following:&lt;/p&gt;
-&lt;p&gt;$$
-\begin{eqnarray&lt;em&gt;}
-\text{posterior} &amp;amp;\propto&amp;amp; \text{prior } \times \text{likelihood} \
-&amp;amp;&amp;amp; \
-f(p|\text{data}) &amp;amp;\propto&amp;amp; f(p) \times f(\text{data}|p)
-\end{eqnarray&lt;/em&gt;}
-$$&lt;/p&gt;
+&lt;p&gt;&lt;img src='images/calculation.png' alt='calculation'&gt;&lt;/p&gt;
 &lt;p&gt;For the sake of comparison with Frequentist theory, you could say that the Bayes factor is the equivalent of the p value. The Bayes factor is the ratio of the probability of one hypothesis in relation to the probability of another hypothesis. So for instance, in our sleeping pill example, the ratio of the probability of improved sleeping in the control group vs. that of the experiment group.&lt;/p&gt;
 &lt;p&gt;The High Density Interval (also known as the Credibility Interval) is the Bayesian equivalent to the Confidence Interval. The Credibility Interval is formed by the posterior distribution. While the Confidence Interval is a collection of intervals with 95% of them containing the true parameter, the Credibility Interval provides an interval that has a 95% chance of containing the true parameter. The Credibility Interval is independent of intentions and sample size. This is good for Data Science, because if we have few data points, we can use strong priors.&lt;/p&gt;
 &lt;p&gt;Now let's look at the same polling example from above performed with Bayesian inference. First we will create our prior. In this case, let's pretend that based on other statistics we've seen, and previous voting habits in this state, that we have a very strong prior belief that 20% of the state will vote yes on the proposition. &lt;/p&gt;
@@ -227,7 +277,7 @@ If our prior beliefs were not strong, then we would set our alpha and beta much 
 &lt;p&gt;To compare these two programs, I will load a dataset called "Skyserver", and I will attempt to predict whether an image is a Star, Galaxy, or Quasar. I will begin with XGBoost.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt; 
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="kp"&gt;loadtxt&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;loadtxt&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
 
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.model_selection&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;
@@ -249,22 +299,22 @@ If our prior beliefs were not strong, then we would set our alpha and beta much 
 
 &lt;p&gt;The first thing I do with a dataset is some basic EDA. This includes checking to see whether there are null values: sky.isnull().sum(). The Skyserver dataset is very clean and there are no null values. However, with XGBoost, even if there were null values, XGBoost has a built in algorithm to impute these missing values. Its algorithm automatically learns what is the best imputation value for missing values based on training. This is one key advantage of using XGBoost. &lt;/p&gt;
 &lt;p&gt;Before I am ready to model, I will prepare my dataset, by labeling the 3 items in the target column - 'star', 'galaxy', 'qso'. Then I will drop unnecessary columns, and assign my y(target) and X(features).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sky[&amp;#39;class&amp;#39;] = sky[&amp;#39;class&amp;#39;].map({&amp;#39;STAR&amp;#39;: 0, &amp;#39;GALAXY&amp;#39;: 1, &amp;#39;QSO&amp;#39;: 2})
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;sky&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sky&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;STAR&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;GALAXY&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;QSO&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sky = sky.drop(columns=[&amp;#39;objid&amp;#39;, &amp;#39;rerun&amp;#39;, &amp;#39;mjd&amp;#39;]) 
-#drop &amp;#39;objid&amp;#39; because irrelevant to model and &amp;#39;rerun&amp;#39; because it has the same value for each row.
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;sky&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sky&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;drop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;objid&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;rerun&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;mjd&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; 
+&lt;span class="c1"&gt;#drop &amp;#39;objid&amp;#39; because irrelevant to model and &amp;#39;rerun&amp;#39; because it has the same value for each row.&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;y = sky[&amp;#39;class&amp;#39;]
-X = sky.drop(&amp;#39;class&amp;#39;, axis=1)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sky&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sky&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;drop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;data_dmatrix = xgb.DMatrix(data=X, label=y) 
-#DMatrix is an internal data structure used in XGBoost. It is recommended as it is optimal for memory and speed.
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;data_dmatrix&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;xgb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DMatrix&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
+&lt;span class="c1"&gt;#DMatrix is an internal data structure used in XGBoost. It is recommended as it is optimal for memory and speed.&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -276,7 +326,7 @@ X = sky.drop(&amp;#39;class&amp;#39;, axis=1)
 
 
 &lt;p&gt;Having completed basic EDA, assigned our X and y, and created a data dmatrix, we are ready to split out data into training and testing sets and use DataFrameMapper, StandardScaler and LabelBinarizer to prepare our data. We do not need to worry about imputing at this point, because as stated above, in addition to the dataset being clean of missing values, XGBoost has a built in imputer that deals with missing values.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;X_val&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_val&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;test_size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random_state&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stratify&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -307,19 +357,19 @@ X = sky.drop(&amp;#39;class&amp;#39;, axis=1)
 
 
 &lt;p&gt;Now it's time to model, predict, and score!&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;model1 = xgb.XGBClassifier(
-    n_estimators = 500, #How many trees.
-    num_class = 3, #Identifying there are 3 classes in our target
-    objective = &amp;#39;reg:logistic&amp;#39;, #Objective refers to which model you want to use.
-    eval_set=&amp;#39;Accuracy&amp;#39;, #Eval_set refers to how you want your model to be evaluated.
-    learning_rate=0.1, #Learning_rate has to do with how much you want each tree to learn.
-    early_stopping_rounds=10, #stop after ten iterations if no improvements have been made.            
-    max_depth=3, #Smaller trees are more interpretable
-    silent=False) #Silent deals with whether we want information for each iteration to be printed out.
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;model1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;xgb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;XGBClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;n_estimators&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#How many trees.&lt;/span&gt;
+    &lt;span class="n"&gt;num_class&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#Identifying there are 3 classes in our target&lt;/span&gt;
+    &lt;span class="n"&gt;objective&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;reg:logistic&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#Objective refers to which model you want to use.&lt;/span&gt;
+    &lt;span class="n"&gt;eval_set&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Accuracy&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#Eval_set refers to how you want your model to be evaluated.&lt;/span&gt;
+    &lt;span class="n"&gt;learning_rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#Learning_rate has to do with how much you want each tree to learn.&lt;/span&gt;
+    &lt;span class="n"&gt;early_stopping_rounds&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#stop after ten iterations if no improvements have been made.            &lt;/span&gt;
+    &lt;span class="n"&gt;max_depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#Smaller trees are more interpretable&lt;/span&gt;
+    &lt;span class="n"&gt;silent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;#Silent deals with whether we want information for each iteration to be printed out.&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;model1.fit(Z_train, y_train)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;model1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -333,11 +383,11 @@ X = sky.drop(&amp;#39;class&amp;#39;, axis=1)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;preds = model1.predict(Z_val)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;preds&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_val&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mean_squared_error(y_val, preds)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;mean_squared_error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_val&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;preds&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -346,16 +396,16 @@ X = sky.drop(&amp;#39;class&amp;#39;, axis=1)
 
 
 &lt;p&gt;Another key feature is that there is a built-in cross validation. This runs a cross validation at each iteration of the boosting process.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;params = {&amp;#39;colsample_bytree&amp;#39;: &amp;#39;0.3&amp;#39;, #the fraction of columns to be randomly sampled for each tree.
-        &amp;#39;learning_rate&amp;#39;: &amp;#39;0.2&amp;#39;, 
-        &amp;#39;max_depth&amp;#39;: &amp;#39;5&amp;#39;, #the maximum depth of a tree
-        &amp;#39;alpha&amp;#39;: &amp;#39;10&amp;#39;} #L1 regularization weight - Lasso
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;colsample_bytree&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;0.3&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#the fraction of columns to be randomly sampled for each tree.&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;learning_rate&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;0.2&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; 
+        &lt;span class="s1"&gt;&amp;#39;max_depth&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;5&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#the maximum depth of a tree&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;alpha&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;10&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="c1"&gt;#L1 regularization weight - Lasso&lt;/span&gt;
 
-cross_val_results = xgb.cv(dtrain=data_dmatrix, params=params) #this is where the dmatrix comes in handy.
+&lt;span class="n"&gt;cross_val_results&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;xgb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dtrain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;data_dmatrix&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;#this is where the dmatrix comes in handy.&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cross_val_results.head()
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;cross_val_results&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -423,7 +473,7 @@ cross_val_results = xgb.cv(dtrain=data_dmatrix, params=params) #this is where th
 &lt;/table&gt;
 &lt;/div&gt;
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print((cross_val_results[&amp;quot;test-rmse-mean&amp;quot;]).tail(1))
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;cross_val_results&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;test-rmse-mean&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -432,23 +482,23 @@ Name: test-rmse-mean, dtype: float64
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xgreg = xgb.train(params=params, dtrain=data_dmatrix, num_boost_round=15)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;xgreg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;xgb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;train&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dtrain&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;data_dmatrix&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num_boost_round&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;A benefit of using boosting is that it provides you with feature importance. It provides you with a score which indicates how valuable a feature was in the construction of the boosted decision tree. The more a certain feature is used to make key decisions in the decision tree, the higher its importance. Importance is calculated by the the amount that each split point improves the overall tree, weighted over the number of observations it is resposible for.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;fig, ax = plt.subplots(figsize=(18, 18))
-plot_importance(model1, ax=ax)
-plt.show()
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplots&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;18&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;18&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;plot_importance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;&lt;img alt="png" src="images/blog_3_23_0.png"&gt;&lt;/p&gt;
 &lt;p&gt;As can be viewed by the chart, Redshift is by the far the most important feature.&lt;/p&gt;
 &lt;p&gt;XGBoost also provides the ability to peak into your model and inspect a tree. &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;fig, ax = plt.subplots(figsize=(20, 20))
-plot_tree(xgreg, num_trees=4, ax=ax)
-plt.show()
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplots&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;plot_tree&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;xgreg&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num_trees&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -459,21 +509,21 @@ plt.show()
 &lt;h1&gt;Catboost&lt;/h1&gt;
 &lt;p&gt;CatBoost is another open-source gradient boosting on decision trees library. CatBoost's claim to fame is its categorical feature support. Instead of having to take care of one-hot-encoding during pre-processing the data, the CatBoost algorithm handles categorical columns while training the data. &lt;/p&gt;
 &lt;p&gt;I'm now going to use DataFrameMapper and StandardScaler to prepare the rest of the data. Following this, I will pass the categorical features, while fitting the model.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mapper2 = DataFrameMapper([
-    ([&amp;#39;ra&amp;#39;], StandardScaler()),
-    ([&amp;#39;dec&amp;#39;], StandardScaler()),
-    ([&amp;#39;u&amp;#39;], StandardScaler()),
-    ([&amp;#39;g&amp;#39;], StandardScaler()),
-    ([&amp;#39;r&amp;#39;], StandardScaler()),
-    ([&amp;#39;i&amp;#39;], StandardScaler()),
-    ([&amp;#39;z&amp;#39;], StandardScaler()),
-    ([&amp;#39;run&amp;#39;], StandardScaler()),
-    ([&amp;#39;specobjid&amp;#39;], StandardScaler()),
-    ([&amp;#39;redshift&amp;#39;], StandardScaler()),
-], default=None, df_out=True)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;mapper2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DataFrameMapper&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;ra&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;dec&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;u&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;g&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;r&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;i&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;z&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;run&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;specobjid&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+    &lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;redshift&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;
+&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;df_out&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
-Z_train2 = mapper2.fit_transform(X_train)
-Z_val2 = mapper2.transform(X_val)
+&lt;span class="n"&gt;Z_train2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mapper2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Z_val2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mapper2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_val&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -486,12 +536,12 @@ Z_val2 = mapper2.transform(X_val)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# categorical_features = list(range(0, X.shape[1]))
-categorical_features = np.where(Z_train2.dtypes == int)[0]
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# categorical_features = list(range(0, X.shape[1]))&lt;/span&gt;
+&lt;span class="n"&gt;categorical_features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;where&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dtypes&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(categorical_features)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -499,21 +549,21 @@ categorical_features = np.where(Z_train2.dtypes == int)[0]
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;model2 = CatBoostClassifier(
-    iterations=100,
-    learning_rate=0.5,
-    early_stopping_rounds = 10,
-    loss_function = &amp;#39;MultiClass&amp;#39;, #For 2-class classification, we should use &amp;quot;Logloss&amp;quot; or &amp;quot;Entropy&amp;quot;
-    custom_metric=&amp;#39;AUC&amp;#39;,
-    use_best_model=True,
-    verbose=5 #information is printed out at every fifth iteration
-)
-model2.fit(
-    Z_train2, y_train,
-    cat_features=categorical_features,
-    eval_set=(Z_val2, y_val),
-    plot=False #This should be True. But the printout is not compatible with this blog framework
-)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;model2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CatBoostClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;iterations&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;learning_rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;early_stopping_rounds&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;loss_function&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;MultiClass&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#For 2-class classification, we should use &amp;quot;Logloss&amp;quot; or &amp;quot;Entropy&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;custom_metric&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;AUC&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;use_best_model&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt; &lt;span class="c1"&gt;#information is printed out at every fifth iteration&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;cat_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;eval_set&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_val2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_val&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt; &lt;span class="c1"&gt;#This should be True. But the printout is not compatible with this blog framework&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -543,7 +593,7 @@ model2.fit(
 
 &lt;p&gt;&lt;img src='images/newplot1.png' alt='newplot1'&gt;&lt;/p&gt;
 &lt;p&gt;A great feature of CatBoost is it provides information at points specified in your params (above was 'verbose = 5').&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;model2.tree_count_
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tree_count_&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -551,8 +601,8 @@ model2.fit(
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;model2.predict_proba
-print(model2.predict_proba(data=Z_val2))
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict_proba&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict_proba&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;Z_val2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -566,28 +616,28 @@ print(model2.predict_proba(data=Z_val2))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;predictions2 = model2.predict(data=Z_val2)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;predictions2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;Z_val2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Like XGBoost, CatBoost also includes an early stopping round. In my model, I set this parameter to 10. This means that if no improvement has been made after 10 trees, the model will stop running. This helps prevent against over fitting. CatBoost also, like XGBoost, has a built in cross-validation.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;params = {&amp;#39;loss_function&amp;#39;: &amp;#39;MultiClass&amp;#39;,
-          &amp;#39;custom_loss&amp;#39;: &amp;#39;AUC&amp;#39;
-         }
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;loss_function&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;MultiClass&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+          &lt;span class="s1"&gt;&amp;#39;custom_loss&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;AUC&amp;#39;&lt;/span&gt;
+         &lt;span class="p"&gt;}&lt;/span&gt;
 
-cross_val_results2 = cv(
-            params = params,
-            pool = Pool(Z_train2, y_train, cat_features=categorical_features),
-            fold_count = 5, #number of folds to split the data into.
-            inverted = False,
-            shuffle = True, #data is randomly shuffled before splitting.
-            partition_random_seed = 0,
-            stratified = False,
-            verbose = False)
+&lt;span class="n"&gt;cross_val_results2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;cv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;params&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;pool&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Pool&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cat_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+            &lt;span class="n"&gt;fold_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#number of folds to split the data into.&lt;/span&gt;
+            &lt;span class="n"&gt;inverted&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;shuffle&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#data is randomly shuffled before splitting.&lt;/span&gt;
+            &lt;span class="n"&gt;partition_random_seed&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;stratified&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;verbose&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cross_val_results2.head()
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;cross_val_results2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -698,11 +748,11 @@ cross_val_results2 = cv(
 &lt;/div&gt;
 
 &lt;p&gt;Also similar to XGBoost, CatBoost provides the user with feature importance. By calling on 'get_feature_importance', the user can see what the model learned about the features and which of them have the greatest influence on the decisions trees.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;fstrs = model2.get_feature_importance(prettified=True)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;fstrs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_feature_importance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;prettified&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;{feature_name : value for  feature_name, value in fstrs}
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;feature_name&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt;  &lt;span class="n"&gt;feature_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;fstrs&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -724,8 +774,8 @@ cross_val_results2 = cv(
 
 
 &lt;p&gt;While XGBoost had the ability to use matplotlib to plot, Catboost's equivalent is brought to us by shap.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;explainer = shap.TreeExplainer(model2)
-shap_values = explainer.shap_values(Pool(Z_train2, y_train, cat_features=categorical_features))
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;explainer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;shap&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TreeExplainer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;shap_values&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;explainer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;shap_values&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Pool&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cat_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -735,36 +785,36 @@ The model has complex ctrs, so the SHAP values will be calculated approximately.
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;explainer.expected_value
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;explainer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;expected_value&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;[0.10654885020023455, 1.5818176696303439, -1.6883665198535525]&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;shap.summary_plot(shap_values, Z_train2, plot_type=&amp;quot;bar&amp;quot;)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;shap&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;summary_plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shap_values&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;plot_type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;bar&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;&lt;img alt="png" src="images/blog_3_48_0.png"&gt;&lt;/p&gt;
 &lt;p&gt;Above we've done a basic model, and we've discovered that redshift is the value that has the greatest effect on the decision trees. One of the best features about CatBoost is that we can now fine-tune parameters in order to speed up the model.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;fast_model = CatBoostClassifier(
-    random_seed=62,
-    iterations=150, #The default is 1000 trees. Lowering the number of trees can speed up the model. 
-    learning_rate=0.01, #Typically, if you lower the number of trees, you should raise the learning rate.
-    boosting_type=&amp;#39;Plain&amp;#39;, #The default is Ordered. This prevents overfitting but is expensive in computation.
-    bootstrap_type=&amp;#39;Bernoulli&amp;#39;, #The default is Bayesian. Bernoulli is faster.
-    subsample=0.5, #less than 1 is optimal for speed.
-    rsm=0.5, #random subspace method speeds up the training
-    leaf_estimation_iterations=5, #for smaller datasets this should be set at 1 or 5.
-    max_ctr_complexity=1)
-#We could also set one_hot_max_size to larger than the default 2. The default 2 means that any category that has 2 
-#or less values will be hot encoded. The rest will be computated by catboosts algorithm. This is more computationally
-#expensive.
-fast_model.fit(
-    Z_train2, y_train,
-    cat_features=categorical_features,
-    verbose=False,
-    plot=False
-)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;fast_model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CatBoostClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;random_seed&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;62&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;iterations&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;150&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#The default is 1000 trees. Lowering the number of trees can speed up the model. &lt;/span&gt;
+    &lt;span class="n"&gt;learning_rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#Typically, if you lower the number of trees, you should raise the learning rate.&lt;/span&gt;
+    &lt;span class="n"&gt;boosting_type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Plain&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#The default is Ordered. This prevents overfitting but is expensive in computation.&lt;/span&gt;
+    &lt;span class="n"&gt;bootstrap_type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Bernoulli&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#The default is Bayesian. Bernoulli is faster.&lt;/span&gt;
+    &lt;span class="n"&gt;subsample&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#less than 1 is optimal for speed.&lt;/span&gt;
+    &lt;span class="n"&gt;rsm&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#random subspace method speeds up the training&lt;/span&gt;
+    &lt;span class="n"&gt;leaf_estimation_iterations&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#for smaller datasets this should be set at 1 or 5.&lt;/span&gt;
+    &lt;span class="n"&gt;max_ctr_complexity&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;#We could also set one_hot_max_size to larger than the default 2. The default 2 means that any category that has 2 &lt;/span&gt;
+&lt;span class="c1"&gt;#or less values will be hot encoded. The rest will be computated by catboosts algorithm. This is more computationally&lt;/span&gt;
+&lt;span class="c1"&gt;#expensive.&lt;/span&gt;
+&lt;span class="n"&gt;fast_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;cat_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -774,23 +824,23 @@ fast_model.fit(
 
 &lt;p&gt;&lt;img src='images/newplot2.png' alt='newplot2'&gt;&lt;/p&gt;
 &lt;p&gt;In addition to the above parameters that were adjusted to speed up the model's performance, there are also more parameters that can be used to fine-tune the model.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;tuned_model = CatBoostClassifier(
-    iterations=500,
-    depth = 6, # how deep trees will go. Usually best between 1 and 10
-    learning_rate=0.03,
-    l2_leaf_reg=3, #regularizer value for Ridge regression
-    bagging_temperature=1,
-    one_hot_max_size=2, #2 is the default value. 
-    leaf_estimation_method=&amp;#39;Newton&amp;#39;,
-    loss_function=&amp;#39;MultiClass&amp;#39;
-)
-tuned_model.fit(
-    Z_train2, y_train,
-    cat_features=categorical_features,
-    verbose=False,
-    eval_set=(Z_val2, y_val),
-    plot=False
-)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;tuned_model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CatBoostClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;iterations&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;depth&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;# how deep trees will go. Usually best between 1 and 10&lt;/span&gt;
+    &lt;span class="n"&gt;learning_rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.03&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;l2_leaf_reg&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#regularizer value for Ridge regression&lt;/span&gt;
+    &lt;span class="n"&gt;bagging_temperature&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;one_hot_max_size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="c1"&gt;#2 is the default value. &lt;/span&gt;
+    &lt;span class="n"&gt;leaf_estimation_method&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Newton&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;loss_function&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;MultiClass&amp;#39;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;tuned_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;cat_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;eval_set&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Z_val2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_val&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -799,15 +849,15 @@ tuned_model.fit(
 
 
 &lt;p&gt;&lt;img src='images/newplot3.png' alt='newplot3'&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;final_model = CatBoostClassifier(
-    random_seed=63,
-    iterations=int(tuned_model.tree_count_),
-)
-final_model.fit(
-    Z_train2, y_train,
-    cat_features=categorical_features,
-    verbose=100
-)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;final_model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CatBoostClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;random_seed&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;63&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;iterations&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tuned_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tree_count_&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;final_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;Z_train2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;cat_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;categorical_features&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;verbose&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -827,7 +877,7 @@ final_model.fit(
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;print(final_model.get_best_score())
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;final_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_best_score&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
