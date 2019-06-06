@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{{tag.name}} / {{SITENAME}}{% endblock %}
+
+{% block content %}
+    <div class="span7 offset2">
+        <section>
+        {% for article in dates %}
+            <article>
+                <time datetime="{{article.date.isoformat()}}">{{article.date.year}}</time>:
+                <a href="{{SITEURL}}/{{article.url}}">
+                    {{article.title}}
+                </a>
+            </article>
+        {% endfor %}
+        </section>
+    </div>
+{% endblock %}

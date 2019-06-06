@@ -1,0 +1,61 @@
+{% extends '_article_base.html' %}
+
+
+{% block article_meta %}
+    {% if article.category or article.tags %}
+    <div class="article-meta article-meta-border">
+        <dl class="dl-horizontal">
+        {% if article.category %}
+            <dt><i class="icon-file"></i></dt>
+            <dd>
+                <a href="{{SITEURL}}/{{article.category.url}}">
+                    {{article.category}}
+                </a>
+            </dd>
+        {% endif %}
+
+        {% if article.tags %}
+            <dt><i class="icon-tags"></i></dt>
+            <dd>
+                {% for tag in article.tags %}
+                    <a href="{{SITEURL}}/{{tag.url}}">{{tag}}</a>
+                    {% if not loop.last %}<span class="separator">/</span>{% endif %}
+                {% endfor %}
+            </dd>
+        {% endif %}
+        </dl>
+
+        <b class="border-notch notch"></b>
+        <b class="notch"></b>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block article_content %}
+    {{article.content}}
+{% endblock %}
+
+{% block article_footer %}
+    {% if CONTACT_URL %}
+        <footer>
+            <p>Wanna tell me what you think?
+            <a href="{{SITEURL}}/{{CONTACT_URL}}">Get in touch.</a></p>
+        </footer>
+    {% endif %}
+{% endblock %}
+
+{% block article_comments %}
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = '{{DISQUS_SHORTNAME}}'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+{% endblock %}
