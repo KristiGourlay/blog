@@ -100,7 +100,7 @@
 <p>To compare these two programs, I will load a dataset called "Skyserver", and I will attempt to predict whether an image is a Star, Galaxy, or Quasar. I will begin with XGBoost.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span> 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">loadtxt</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="kp">loadtxt</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
@@ -122,22 +122,22 @@
 
 <p>The first thing I do with a dataset is some basic EDA. This includes checking to see whether there are null values: sky.isnull().sum(). The Skyserver dataset is very clean and there are no null values. However, with XGBoost, even if there were null values, XGBoost has a built in algorithm to impute these missing values. Its algorithm automatically learns what is the best imputation value for missing values based on training. This is one key advantage of using XGBoost. </p>
 <p>Before I am ready to model, I will prepare my dataset, by labeling the 3 items in the target column - 'star', 'galaxy', 'qso'. Then I will drop unnecessary columns, and assign my y(target) and X(features).</p>
-<div class="highlight"><pre><span></span><span class="n">sky</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sky</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="s1">&#39;STAR&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GALAXY&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;QSO&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<div class="highlight"><pre><span></span>sky[&#39;class&#39;] = sky[&#39;class&#39;].map({&#39;STAR&#39;: 0, &#39;GALAXY&#39;: 1, &#39;QSO&#39;: 2})
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">sky</span> <span class="o">=</span> <span class="n">sky</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;objid&#39;</span><span class="p">,</span> <span class="s1">&#39;rerun&#39;</span><span class="p">,</span> <span class="s1">&#39;mjd&#39;</span><span class="p">])</span> 
-<span class="c1">#drop &#39;objid&#39; because irrelevant to model and &#39;rerun&#39; because it has the same value for each row.</span>
+<div class="highlight"><pre><span></span>sky = sky.drop(columns=[&#39;objid&#39;, &#39;rerun&#39;, &#39;mjd&#39;]) 
+#drop &#39;objid&#39; because irrelevant to model and &#39;rerun&#39; because it has the same value for each row.
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">sky</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">sky</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>y = sky[&#39;class&#39;]
+X = sky.drop(&#39;class&#39;, axis=1)
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">data_dmatrix</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">DMatrix</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> 
-<span class="c1">#DMatrix is an internal data structure used in XGBoost. It is recommended as it is optimal for memory and speed.</span>
+<div class="highlight"><pre><span></span>data_dmatrix = xgb.DMatrix(data=X, label=y) 
+#DMatrix is an internal data structure used in XGBoost. It is recommended as it is optimal for memory and speed.
 </pre></div>
 
 
@@ -149,7 +149,7 @@
 
 
 <p>Having completed basic EDA, assigned our X and y, and created a data dmatrix, we are ready to split out data into training and testing sets and use DataFrameMapper, StandardScaler and LabelBinarizer to prepare our data. We do not need to worry about imputing at this point, because as stated above, in addition to the dataset being clean of missing values, XGBoost has a built in imputer that deals with missing values.</p>
-<div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 </pre></div>
 
 
@@ -180,19 +180,19 @@
 
 
 <p>Now it's time to model, predict, and score!</p>
-<div class="highlight"><pre><span></span><span class="n">model1</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">(</span>
-    <span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="c1">#How many trees.</span>
-    <span class="n">num_class</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="c1">#Identifying there are 3 classes in our target</span>
-    <span class="n">objective</span> <span class="o">=</span> <span class="s1">&#39;reg:logistic&#39;</span><span class="p">,</span> <span class="c1">#Objective refers to which model you want to use.</span>
-    <span class="n">eval_set</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">,</span> <span class="c1">#Eval_set refers to how you want your model to be evaluated.</span>
-    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="c1">#Learning_rate has to do with how much you want each tree to learn.</span>
-    <span class="n">early_stopping_rounds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="c1">#stop after ten iterations if no improvements have been made.            </span>
-    <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1">#Smaller trees are more interpretable</span>
-    <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c1">#Silent deals with whether we want information for each iteration to be printed out.</span>
+<div class="highlight"><pre><span></span>model1 = xgb.XGBClassifier(
+    n_estimators = 500, #How many trees.
+    num_class = 3, #Identifying there are 3 classes in our target
+    objective = &#39;reg:logistic&#39;, #Objective refers to which model you want to use.
+    eval_set=&#39;Accuracy&#39;, #Eval_set refers to how you want your model to be evaluated.
+    learning_rate=0.1, #Learning_rate has to do with how much you want each tree to learn.
+    early_stopping_rounds=10, #stop after ten iterations if no improvements have been made.            
+    max_depth=3, #Smaller trees are more interpretable
+    silent=False) #Silent deals with whether we want information for each iteration to be printed out.
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">model1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>model1.fit(Z_train, y_train)
 </pre></div>
 
 
@@ -206,11 +206,11 @@
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">preds</span> <span class="o">=</span> <span class="n">model1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Z_val</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>preds = model1.predict(Z_val)
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>mean_squared_error(y_val, preds)
 </pre></div>
 
 
@@ -219,16 +219,16 @@
 
 
 <p>Another key feature is that there is a built-in cross validation. This runs a cross validation at each iteration of the boosting process.</p>
-<div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;colsample_bytree&#39;</span><span class="p">:</span> <span class="s1">&#39;0.3&#39;</span><span class="p">,</span> <span class="c1">#the fraction of columns to be randomly sampled for each tree.</span>
-        <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="s1">&#39;0.2&#39;</span><span class="p">,</span> 
-        <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="c1">#the maximum depth of a tree</span>
-        <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="s1">&#39;10&#39;</span><span class="p">}</span> <span class="c1">#L1 regularization weight - Lasso</span>
+<div class="highlight"><pre><span></span>params = {&#39;colsample_bytree&#39;: &#39;0.3&#39;, #the fraction of columns to be randomly sampled for each tree.
+        &#39;learning_rate&#39;: &#39;0.2&#39;, 
+        &#39;max_depth&#39;: &#39;5&#39;, #the maximum depth of a tree
+        &#39;alpha&#39;: &#39;10&#39;} #L1 regularization weight - Lasso
 
-<span class="n">cross_val_results</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">cv</span><span class="p">(</span><span class="n">dtrain</span><span class="o">=</span><span class="n">data_dmatrix</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span> <span class="c1">#this is where the dmatrix comes in handy.</span>
+cross_val_results = xgb.cv(dtrain=data_dmatrix, params=params) #this is where the dmatrix comes in handy.
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">cross_val_results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="highlight"><pre><span></span>cross_val_results.head()
 </pre></div>
 
 
@@ -296,7 +296,7 @@
 </table>
 </div>
 
-<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">((</span><span class="n">cross_val_results</span><span class="p">[</span><span class="s2">&quot;test-rmse-mean&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<div class="highlight"><pre><span></span>print((cross_val_results[&quot;test-rmse-mean&quot;]).tail(1))
 </pre></div>
 
 
@@ -305,23 +305,23 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">xgreg</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">dtrain</span><span class="o">=</span><span class="n">data_dmatrix</span><span class="p">,</span> <span class="n">num_boost_round</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>xgreg = xgb.train(params=params, dtrain=data_dmatrix, num_boost_round=15)
 </pre></div>
 
 
 <p>A benefit of using boosting is that it provides you with feature importance. It provides you with a score which indicates how valuable a feature was in the construction of the boosted decision tree. The more a certain feature is used to make key decisions in the decision tree, the higher its importance. Importance is calculated by the the amount that each split point improves the overall tree, weighted over the number of observations it is resposible for.</p>
-<div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
-<span class="n">plot_importance</span><span class="p">(</span><span class="n">model1</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize=(18, 18))
+plot_importance(model1, ax=ax)
+plt.show()
 </pre></div>
 
 
 <p><img alt="png" src="images/blog_3_23_0.png"></p>
 <p>As can be viewed by the chart, Redshift is by the far the most important feature.</p>
 <p>XGBoost also provides the ability to peak into your model and inspect a tree. </p>
-<div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-<span class="n">plot_tree</span><span class="p">(</span><span class="n">xgreg</span><span class="p">,</span> <span class="n">num_trees</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize=(20, 20))
+plot_tree(xgreg, num_trees=4, ax=ax)
+plt.show()
 </pre></div>
 
 
@@ -332,21 +332,21 @@ Name: test-rmse-mean, dtype: float64
 <h1>Catboost</h1>
 <p>CatBoost is another open-source gradient boosting on decision trees library. CatBoost's claim to fame is its categorical feature support. Instead of having to take care of one-hot-encoding during pre-processing the data, the CatBoost algorithm handles categorical columns while training the data. </p>
 <p>I'm now going to use DataFrameMapper and StandardScaler to prepare the rest of the data. Following this, I will pass the categorical features, while fitting the model.</p>
-<div class="highlight"><pre><span></span><span class="n">mapper2</span> <span class="o">=</span> <span class="n">DataFrameMapper</span><span class="p">([</span>
-    <span class="p">([</span><span class="s1">&#39;ra&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;dec&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;u&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;i&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;specobjid&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">&#39;redshift&#39;</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-<span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">df_out</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>mapper2 = DataFrameMapper([
+    ([&#39;ra&#39;], StandardScaler()),
+    ([&#39;dec&#39;], StandardScaler()),
+    ([&#39;u&#39;], StandardScaler()),
+    ([&#39;g&#39;], StandardScaler()),
+    ([&#39;r&#39;], StandardScaler()),
+    ([&#39;i&#39;], StandardScaler()),
+    ([&#39;z&#39;], StandardScaler()),
+    ([&#39;run&#39;], StandardScaler()),
+    ([&#39;specobjid&#39;], StandardScaler()),
+    ([&#39;redshift&#39;], StandardScaler()),
+], default=None, df_out=True)
 
-<span class="n">Z_train2</span> <span class="o">=</span> <span class="n">mapper2</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
-<span class="n">Z_val2</span> <span class="o">=</span> <span class="n">mapper2</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_val</span><span class="p">)</span>
+Z_train2 = mapper2.fit_transform(X_train)
+Z_val2 = mapper2.transform(X_val)
 </pre></div>
 
 
@@ -359,12 +359,12 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="c1"># categorical_features = list(range(0, X.shape[1]))</span>
-<span class="n">categorical_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Z_train2</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight"><pre><span></span># categorical_features = list(range(0, X.shape[1]))
+categorical_features = np.where(Z_train2.dtypes == int)[0]
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">categorical_features</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>print(categorical_features)
 </pre></div>
 
 
@@ -372,21 +372,21 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">model2</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
-    <span class="n">iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="n">early_stopping_rounds</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="n">loss_function</span> <span class="o">=</span> <span class="s1">&#39;MultiClass&#39;</span><span class="p">,</span> <span class="c1">#For 2-class classification, we should use &quot;Logloss&quot; or &quot;Entropy&quot;</span>
-    <span class="n">custom_metric</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">,</span>
-    <span class="n">use_best_model</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="mi">5</span> <span class="c1">#information is printed out at every fifth iteration</span>
-<span class="p">)</span>
-<span class="n">model2</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
-    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
-    <span class="n">eval_set</span><span class="o">=</span><span class="p">(</span><span class="n">Z_val2</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
-    <span class="n">plot</span><span class="o">=</span><span class="bp">False</span> <span class="c1">#This should be True. But the printout is not compatible with this blog framework</span>
-<span class="p">)</span>
+<div class="highlight"><pre><span></span>model2 = CatBoostClassifier(
+    iterations=100,
+    learning_rate=0.5,
+    early_stopping_rounds = 10,
+    loss_function = &#39;MultiClass&#39;, #For 2-class classification, we should use &quot;Logloss&quot; or &quot;Entropy&quot;
+    custom_metric=&#39;AUC&#39;,
+    use_best_model=True,
+    verbose=5 #information is printed out at every fifth iteration
+)
+model2.fit(
+    Z_train2, y_train,
+    cat_features=categorical_features,
+    eval_set=(Z_val2, y_val),
+    plot=False #This should be True. But the printout is not compatible with this blog framework
+)
 </pre></div>
 
 
@@ -416,7 +416,7 @@ Name: test-rmse-mean, dtype: float64
 
 <p><img src='images/newplot1.png' alt='newplot1'></p>
 <p>A great feature of CatBoost is it provides information at points specified in your params (above was 'verbose = 5').</p>
-<div class="highlight"><pre><span></span><span class="n">model2</span><span class="o">.</span><span class="n">tree_count_</span>
+<div class="highlight"><pre><span></span>model2.tree_count_
 </pre></div>
 
 
@@ -424,8 +424,8 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">model2</span><span class="o">.</span><span class="n">predict_proba</span>
-<span class="k">print</span><span class="p">(</span><span class="n">model2</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">Z_val2</span><span class="p">))</span>
+<div class="highlight"><pre><span></span>model2.predict_proba
+print(model2.predict_proba(data=Z_val2))
 </pre></div>
 
 
@@ -439,28 +439,28 @@ Name: test-rmse-mean, dtype: float64
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">predictions2</span> <span class="o">=</span> <span class="n">model2</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">Z_val2</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>predictions2 = model2.predict(data=Z_val2)
 </pre></div>
 
 
 <p>Like XGBoost, CatBoost also includes an early stopping round. In my model, I set this parameter to 10. This means that if no improvement has been made after 10 trees, the model will stop running. This helps prevent against over fitting. CatBoost also, like XGBoost, has a built in cross-validation.</p>
-<div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss_function&#39;</span><span class="p">:</span> <span class="s1">&#39;MultiClass&#39;</span><span class="p">,</span>
-          <span class="s1">&#39;custom_loss&#39;</span><span class="p">:</span> <span class="s1">&#39;AUC&#39;</span>
-         <span class="p">}</span>
+<div class="highlight"><pre><span></span>params = {&#39;loss_function&#39;: &#39;MultiClass&#39;,
+          &#39;custom_loss&#39;: &#39;AUC&#39;
+         }
 
-<span class="n">cross_val_results2</span> <span class="o">=</span> <span class="n">cv</span><span class="p">(</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span>
-            <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">),</span>
-            <span class="n">fold_count</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="c1">#number of folds to split the data into.</span>
-            <span class="n">inverted</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-            <span class="n">shuffle</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="c1">#data is randomly shuffled before splitting.</span>
-            <span class="n">partition_random_seed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="n">stratified</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-            <span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+cross_val_results2 = cv(
+            params = params,
+            pool = Pool(Z_train2, y_train, cat_features=categorical_features),
+            fold_count = 5, #number of folds to split the data into.
+            inverted = False,
+            shuffle = True, #data is randomly shuffled before splitting.
+            partition_random_seed = 0,
+            stratified = False,
+            verbose = False)
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">cross_val_results2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="highlight"><pre><span></span>cross_val_results2.head()
 </pre></div>
 
 
@@ -571,11 +571,11 @@ Name: test-rmse-mean, dtype: float64
 </div>
 
 <p>Also similar to XGBoost, CatBoost provides the user with feature importance. By calling on 'get_feature_importance', the user can see what the model learned about the features and which of them have the greatest influence on the decisions trees.</p>
-<div class="highlight"><pre><span></span><span class="n">fstrs</span> <span class="o">=</span> <span class="n">model2</span><span class="o">.</span><span class="n">get_feature_importance</span><span class="p">(</span><span class="n">prettified</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>fstrs = model2.get_feature_importance(prettified=True)
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="p">{</span><span class="n">feature_name</span> <span class="p">:</span> <span class="n">value</span> <span class="k">for</span>  <span class="n">feature_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fstrs</span><span class="p">}</span>
+<div class="highlight"><pre><span></span>{feature_name : value for  feature_name, value in fstrs}
 </pre></div>
 
 
@@ -597,8 +597,8 @@ Name: test-rmse-mean, dtype: float64
 
 
 <p>While XGBoost had the ability to use matplotlib to plot, Catboost's equivalent is brought to us by shap.</p>
-<div class="highlight"><pre><span></span><span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">model2</span><span class="p">)</span>
-<span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">Pool</span><span class="p">(</span><span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">))</span>
+<div class="highlight"><pre><span></span>explainer = shap.TreeExplainer(model2)
+shap_values = explainer.shap_values(Pool(Z_train2, y_train, cat_features=categorical_features))
 </pre></div>
 
 
@@ -608,36 +608,36 @@ The model has complex ctrs, so the SHAP values will be calculated approximately.
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="n">explainer</span><span class="o">.</span><span class="n">expected_value</span>
+<div class="highlight"><pre><span></span>explainer.expected_value
 </pre></div>
 
 
 <p>[0.10654885020023455, 1.5818176696303439, -1.6883665198535525]</p>
-<div class="highlight"><pre><span></span><span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="n">Z_train2</span><span class="p">,</span> <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>shap.summary_plot(shap_values, Z_train2, plot_type=&quot;bar&quot;)
 </pre></div>
 
 
 <p><img alt="png" src="images/blog_3_48_0.png"></p>
 <p>Above we've done a basic model, and we've discovered that redshift is the value that has the greatest effect on the decision trees. One of the best features about CatBoost is that we can now fine-tune parameters in order to speed up the model.</p>
-<div class="highlight"><pre><span></span><span class="n">fast_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
-    <span class="n">random_seed</span><span class="o">=</span><span class="mi">62</span><span class="p">,</span>
-    <span class="n">iterations</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="c1">#The default is 1000 trees. Lowering the number of trees can speed up the model. </span>
-    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="c1">#Typically, if you lower the number of trees, you should raise the learning rate.</span>
-    <span class="n">boosting_type</span><span class="o">=</span><span class="s1">&#39;Plain&#39;</span><span class="p">,</span> <span class="c1">#The default is Ordered. This prevents overfitting but is expensive in computation.</span>
-    <span class="n">bootstrap_type</span><span class="o">=</span><span class="s1">&#39;Bernoulli&#39;</span><span class="p">,</span> <span class="c1">#The default is Bayesian. Bernoulli is faster.</span>
-    <span class="n">subsample</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="c1">#less than 1 is optimal for speed.</span>
-    <span class="n">rsm</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="c1">#random subspace method speeds up the training</span>
-    <span class="n">leaf_estimation_iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="c1">#for smaller datasets this should be set at 1 or 5.</span>
-    <span class="n">max_ctr_complexity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1">#We could also set one_hot_max_size to larger than the default 2. The default 2 means that any category that has 2 </span>
-<span class="c1">#or less values will be hot encoded. The rest will be computated by catboosts algorithm. This is more computationally</span>
-<span class="c1">#expensive.</span>
-<span class="n">fast_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
-    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-    <span class="n">plot</span><span class="o">=</span><span class="bp">False</span>
-<span class="p">)</span>
+<div class="highlight"><pre><span></span>fast_model = CatBoostClassifier(
+    random_seed=62,
+    iterations=150, #The default is 1000 trees. Lowering the number of trees can speed up the model. 
+    learning_rate=0.01, #Typically, if you lower the number of trees, you should raise the learning rate.
+    boosting_type=&#39;Plain&#39;, #The default is Ordered. This prevents overfitting but is expensive in computation.
+    bootstrap_type=&#39;Bernoulli&#39;, #The default is Bayesian. Bernoulli is faster.
+    subsample=0.5, #less than 1 is optimal for speed.
+    rsm=0.5, #random subspace method speeds up the training
+    leaf_estimation_iterations=5, #for smaller datasets this should be set at 1 or 5.
+    max_ctr_complexity=1)
+#We could also set one_hot_max_size to larger than the default 2. The default 2 means that any category that has 2 
+#or less values will be hot encoded. The rest will be computated by catboosts algorithm. This is more computationally
+#expensive.
+fast_model.fit(
+    Z_train2, y_train,
+    cat_features=categorical_features,
+    verbose=False,
+    plot=False
+)
 </pre></div>
 
 
@@ -647,23 +647,23 @@ The model has complex ctrs, so the SHAP values will be calculated approximately.
 
 <p><img src='images/newplot2.png' alt='newplot2'></p>
 <p>In addition to the above parameters that were adjusted to speed up the model's performance, there are also more parameters that can be used to fine-tune the model.</p>
-<div class="highlight"><pre><span></span><span class="n">tuned_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
-    <span class="n">iterations</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-    <span class="n">depth</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="c1"># how deep trees will go. Usually best between 1 and 10</span>
-    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
-    <span class="n">l2_leaf_reg</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1">#regularizer value for Ridge regression</span>
-    <span class="n">bagging_temperature</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">one_hot_max_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1">#2 is the default value. </span>
-    <span class="n">leaf_estimation_method</span><span class="o">=</span><span class="s1">&#39;Newton&#39;</span><span class="p">,</span>
-    <span class="n">loss_function</span><span class="o">=</span><span class="s1">&#39;MultiClass&#39;</span>
-<span class="p">)</span>
-<span class="n">tuned_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
-    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-    <span class="n">eval_set</span><span class="o">=</span><span class="p">(</span><span class="n">Z_val2</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
-    <span class="n">plot</span><span class="o">=</span><span class="bp">False</span>
-<span class="p">)</span>
+<div class="highlight"><pre><span></span>tuned_model = CatBoostClassifier(
+    iterations=500,
+    depth = 6, # how deep trees will go. Usually best between 1 and 10
+    learning_rate=0.03,
+    l2_leaf_reg=3, #regularizer value for Ridge regression
+    bagging_temperature=1,
+    one_hot_max_size=2, #2 is the default value. 
+    leaf_estimation_method=&#39;Newton&#39;,
+    loss_function=&#39;MultiClass&#39;
+)
+tuned_model.fit(
+    Z_train2, y_train,
+    cat_features=categorical_features,
+    verbose=False,
+    eval_set=(Z_val2, y_val),
+    plot=False
+)
 </pre></div>
 
 
@@ -672,15 +672,15 @@ The model has complex ctrs, so the SHAP values will be calculated approximately.
 
 
 <p><img src='images/newplot3.png' alt='newplot3'></p>
-<div class="highlight"><pre><span></span><span class="n">final_model</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
-    <span class="n">random_seed</span><span class="o">=</span><span class="mi">63</span><span class="p">,</span>
-    <span class="n">iterations</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">tuned_model</span><span class="o">.</span><span class="n">tree_count_</span><span class="p">),</span>
-<span class="p">)</span>
-<span class="n">final_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="n">Z_train2</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
-    <span class="n">cat_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="mi">100</span>
-<span class="p">)</span>
+<div class="highlight"><pre><span></span>final_model = CatBoostClassifier(
+    random_seed=63,
+    iterations=int(tuned_model.tree_count_),
+)
+final_model.fit(
+    Z_train2, y_train,
+    cat_features=categorical_features,
+    verbose=100
+)
 </pre></div>
 
 
@@ -700,7 +700,7 @@ The model has complex ctrs, so the SHAP values will be calculated approximately.
 </pre></div>
 
 
-<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">final_model</span><span class="o">.</span><span class="n">get_best_score</span><span class="p">())</span>
+<div class="highlight"><pre><span></span>print(final_model.get_best_score())
 </pre></div>
 
 
