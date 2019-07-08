@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Pipelines and Transformers / Kristi's Blog</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="shortcut icon" href="https://KristiGourlay.github.io/blog/theme/favicon.ico" />
+        <link rel="apple-touch-icon" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-iphone.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-ipad.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-iphone4.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="https://KristiGourlay.github.io/blog/theme/apple-touch-icon-ipad3.png" />
+
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/colorbox.css">
+
+        <link rel="stylesheet" href="https://KristiGourlay.github.io/blog/theme/css/main.css">
+
+        <script src="https://KristiGourlay.github.io/blog/theme/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div class="span9">
+                    <div class="row">
+                        <div class="span2"> <!-- logo -->
+                            <div id="logo">
+                                <a href="https://KristiGourlay.github.io/blog">
+                                    <img alt="Kristi's Blog" src="https://KristiGourlay.github.io/blog/" />
+                                </a>
+                            </div> <!-- logo -->
+                        </div> <!-- logo span -->
+
+                        <div class="span7"> <!-- header -->
+                            <!--[if lt IE 9]>
+                                <p class="chromeframe alert alert-warning">You are using an <strong>outdated</strong> browser, and this site might not look best in it. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+                            <![endif]-->
+                            <header id="site-header">
+                                <div id="site-header-content">
+                                    <h1>
+                                        <a href="https://KristiGourlay.github.io/blog">Kristi's Blog</a>
+                                        <small>
+                                            <span class="divider">/</span> 
+                                        </small>
+                                    </h1>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </header>
+                        </div> <!-- header span -->
+                    </div> <!-- header row -->
+
+                    <div class="row"> <!-- content -->
+                        <div class="content">
+ <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<div class="article-page">
+    <div class="span7 offset2">
+        <header class="article">
+            <h2><a href="https://KristiGourlay.github.io/blog/blog_6.html" rel="bookmark">Pipelines and Transformers</a></h2>
+            <time datetime="2019-07-08T12:10:00-04:00">
+                Jul 08, 2019
+            </time>
+        </header>
+    </div>
+
+    <div class="span2">
+    <div class="article-meta article-meta-border">
+        <dl class="dl-horizontal">
+            <dt><i class="icon-file"></i></dt>
+            <dd>
+                <a href="https://KristiGourlay.github.io/blog/category/misc.html">
+                    misc
+                </a>
+            </dd>
+
+            <dt><i class="icon-tags"></i></dt>
+            <dd>
+                    <a href="https://KristiGourlay.github.io/blog/tag/python.html">python</a>
+            </dd>
+        </dl>
+
+        <b class="border-notch notch"></b>
+        <b class="notch"></b>
+    </div>
+    </div>
+
+    <div class="span7">
+        <section>
+            <article class="entry">
+    <p>Since my Data Science Bootcamp ended a little over a month ago, I've spent most of my time going over what I had learned and refreshing my skills. Most of my time has been spent going deeper into areas that we covered briefly. For example, I have been practicing with Keras, SQL, and time series programs like Prophet. In the last few days, I decided to go deeper into something that I did use frequently in my projects, but not to the full extent of what it is designed for. This powerful resourse is called a pipeline and it's available (like most tools I have come to love) through the Scikit-learn libraries. Scikit-learn Pipeline is used to automate machine learning workflows. Pipelines create a linear sequence of data transforms to be chained together in a process that can be evaluated all in one step. In addition to Pipelines, I am also going to tackle something completely new to me which is ColumnTransformers. A Column Transformer can be paired with a Pipeline to simplify the workflow. Let's start by importing our essential libraries and reading in our data. </p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/brazil_cities.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>CITY</th>
+      <th>STATE</th>
+      <th>CAPITAL</th>
+      <th>IBGE_RES_POP</th>
+      <th>IBGE_RES_POP_BRAS</th>
+      <th>IBGE_RES_POP_ESTR</th>
+      <th>IBGE_DU</th>
+      <th>IBGE_DU_URBAN</th>
+      <th>IBGE_DU_RURAL</th>
+      <th>IBGE_POP</th>
+      <th>...</th>
+      <th>Pu_Bank</th>
+      <th>Pr_Assets</th>
+      <th>Pu_Assets</th>
+      <th>Cars</th>
+      <th>Motorcycles</th>
+      <th>Wheeled_tractor</th>
+      <th>UBER</th>
+      <th>MAC</th>
+      <th>WAL-MART</th>
+      <th>POST_OFFICES</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>São Paulo</td>
+      <td>SP</td>
+      <td>1</td>
+      <td>11253503.0</td>
+      <td>11133776.0</td>
+      <td>119727.0</td>
+      <td>3576148.0</td>
+      <td>3548433.0</td>
+      <td>27715.0</td>
+      <td>10463636.0</td>
+      <td>...</td>
+      <td>8.0</td>
+      <td>1.947077e+13</td>
+      <td>2.893261e+12</td>
+      <td>5740995.0</td>
+      <td>1134570.0</td>
+      <td>3236.0</td>
+      <td>1.0</td>
+      <td>130.0</td>
+      <td>7.0</td>
+      <td>225.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Osasco</td>
+      <td>SP</td>
+      <td>0</td>
+      <td>666740.0</td>
+      <td>664447.0</td>
+      <td>2293.0</td>
+      <td>202009.0</td>
+      <td>202009.0</td>
+      <td>NaN</td>
+      <td>616068.0</td>
+      <td>...</td>
+      <td>2.0</td>
+      <td>6.732330e+12</td>
+      <td>1.321699e+10</td>
+      <td>283641.0</td>
+      <td>73477.0</td>
+      <td>174.0</td>
+      <td>NaN</td>
+      <td>7.0</td>
+      <td>1.0</td>
+      <td>10.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Rio De Janeiro</td>
+      <td>RJ</td>
+      <td>1</td>
+      <td>6320446.0</td>
+      <td>6264915.0</td>
+      <td>55531.0</td>
+      <td>2147235.0</td>
+      <td>2147235.0</td>
+      <td>NaN</td>
+      <td>5426838.0</td>
+      <td>...</td>
+      <td>5.0</td>
+      <td>2.283445e+12</td>
+      <td>9.738864e+11</td>
+      <td>2039930.0</td>
+      <td>363486.0</td>
+      <td>289.0</td>
+      <td>1.0</td>
+      <td>68.0</td>
+      <td>1.0</td>
+      <td>120.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>3 rows × 81 columns</p>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(5576, 81)
+</pre></div>
+
+
+<p>I've decided to use data on Brazilian cities. For the purpose of this blog, I am going to only look at 8 columns which relate to: State, Capital, Population, Life Expectancy, Education Index, GDP, Number of Companies, and Tourism Category.</p>
+<div class="highlight"><pre><span></span><span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="s1">&#39;CAPITAL&#39;</span><span class="p">,</span> <span class="s1">&#39;IBGE_RES_POP&#39;</span><span class="p">,</span> <span class="s1">&#39;IDHM_Longevidade&#39;</span><span class="p">,</span> <span class="s1">&#39;IDHM_Educacao&#39;</span><span class="p">,</span> <span class="s1">&#39;GDP&#39;</span><span class="p">,</span> <span class="s1">&#39;COMP_TOT&#39;</span><span class="p">,</span> <span class="s1">&#39;CATEGORIA_TUR&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;STATE&#39;</span><span class="p">:</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;CAPITAL&#39;</span><span class="p">:</span> <span class="s1">&#39;capital&#39;</span><span class="p">,</span> <span class="s1">&#39;IBGE_RES_POP&#39;</span><span class="p">:</span> <span class="s1">&#39;population&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;IDHM_Longevidade&#39;</span><span class="p">:</span> <span class="s1">&#39;life_expectancy&#39;</span><span class="p">,</span> <span class="s1">&#39;IDHM_Educacao&#39;</span><span class="p">:</span> <span class="s1">&#39;education_index&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;GDP&#39;</span><span class="p">:</span> <span class="s1">&#39;gdp&#39;</span><span class="p">,</span> <span class="s1">&#39;COMP_TOT&#39;</span><span class="p">:</span> <span class="s1">&#39;num_companies&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;CATEGORIA_TUR&#39;</span><span class="p">:</span> <span class="s1">&#39;tourism_category&#39;</span><span class="p">,})</span>
+<span class="c1">#Renaming the columns with more descriptive names</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>state                object
+capital               int64
+population          float64
+life_expectancy     float64
+education_index     float64
+gdp                 float64
+num_companies       float64
+tourism_category     object
+dtype: object
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>state                  0
+capital                0
+population             8
+life_expectancy        8
+education_index        8
+gdp                    3
+num_companies          3
+tourism_category    2288
+dtype: int64
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">])</span> <span class="c1"># Drop all NaN in target column</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>capital</th>
+      <th>population</th>
+      <th>life_expectancy</th>
+      <th>education_index</th>
+      <th>gdp</th>
+      <th>num_companies</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>capital</th>
+      <td>1.000000</td>
+      <td>0.567143</td>
+      <td>0.050703</td>
+      <td>0.113596</td>
+      <td>0.420889</td>
+      <td>0.479255</td>
+    </tr>
+    <tr>
+      <th>population</th>
+      <td>0.567143</td>
+      <td>1.000000</td>
+      <td>0.081922</td>
+      <td>0.137562</td>
+      <td>0.942853</td>
+      <td>0.960272</td>
+    </tr>
+    <tr>
+      <th>life_expectancy</th>
+      <td>0.050703</td>
+      <td>0.081922</td>
+      <td>1.000000</td>
+      <td>0.704590</td>
+      <td>0.071787</td>
+      <td>0.091642</td>
+    </tr>
+    <tr>
+      <th>education_index</th>
+      <td>0.113596</td>
+      <td>0.137562</td>
+      <td>0.704590</td>
+      <td>1.000000</td>
+      <td>0.105869</td>
+      <td>0.135122</td>
+    </tr>
+    <tr>
+      <th>gdp</th>
+      <td>0.420889</td>
+      <td>0.942853</td>
+      <td>0.071787</td>
+      <td>0.105869</td>
+      <td>1.000000</td>
+      <td>0.946001</td>
+    </tr>
+    <tr>
+      <th>num_companies</th>
+      <td>0.479255</td>
+      <td>0.960272</td>
+      <td>0.091642</td>
+      <td>0.135122</td>
+      <td>0.946001</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">corr</span><span class="p">(),</span> <span class="n">annot</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Reds&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x10ba1ccf8&gt;
+</pre></div>
+
+
+<p><img alt="png" src="images/blog_6_14_1.png"></p>
+<h1>Train Test Split</h1>
+<p>After some basic EDA, it's time to split the data into training and testing sets. The y (target) is going to be the population, and the rest of the columns will be the features I am using to predict the population of a city in Brazil.</p>
+<div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;population&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">features</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>state</th>
+      <th>capital</th>
+      <th>life_expectancy</th>
+      <th>education_index</th>
+      <th>gdp</th>
+      <th>num_companies</th>
+      <th>tourism_category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SP</td>
+      <td>1</td>
+      <td>0.855</td>
+      <td>0.725</td>
+      <td>6.870359e+08</td>
+      <td>530446.0</td>
+      <td>A</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>SP</td>
+      <td>0</td>
+      <td>0.840</td>
+      <td>0.718</td>
+      <td>7.440269e+07</td>
+      <td>15315.0</td>
+      <td>B</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>RJ</td>
+      <td>1</td>
+      <td>0.845</td>
+      <td>0.719</td>
+      <td>3.294314e+08</td>
+      <td>190038.0</td>
+      <td>A</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(4454, 7)
+(1114, 7)
+(4454,)
+(1114,)
+</pre></div>
+
+
+<p>At this point in my work flow, I would import dataframe mapper from Scikit-learn and I would start to fix each column individually. However, this is where I am going to explore a new tool to me, Scikit-Learn's ColumnTransformer, which will simultaneously transform several columns, which need the same transformation process. </p>
+<h1>Classify Columns into Categorical and Numerical</h1>
+<p>Columns do not necessarily need to be separated into these two type of columns, but in this case it makes for a better example. This is a perfect example showing when you would used dataframe mapper and when you would use this process instead. If you have several columns that need very diferent types of transforming, I would used dataframe mapper, if you have a more homogenous group, where you have several columns that need to be transformed in a similar way, I would use this process. It makes for a cleaner workflow.</p>
+<p>After performing basic EDA, it became apparent that the columns State, Capital, and Tourism Category, could be defined as Categorical, and they will need to be One Hot Encoded and since there are missing values, we will need to use an Imputer. The columns Life Expectancy, Education Index, GDP, and Number of Companies, could be defined as Numerical, and they will need to be scaled, as well as have the missing values imputed.</p>
+<div class="highlight"><pre><span></span><span class="n">cat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;capital&#39;</span><span class="p">,</span> <span class="s1">&#39;tourism_category&#39;</span><span class="p">]</span>
+<span class="n">num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;life_expectancy&#39;</span><span class="p">,</span> <span class="s1">&#39;education_index&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp&#39;</span><span class="p">,</span> <span class="s1">&#39;num_companies&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<h1>Build a Pipeline for Categorical Columns</h1>
+<p>Now I am going to start building pipelines for these two types of columns. Let's start with our Categorical columns.</p>
+<div class="highlight"><pre><span></span><span class="n">cat_cols</span> <span class="c1">#remind us what our categorical columns are</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>[&#39;state&#39;, &#39;capital&#39;, &#39;tourism_category&#39;]
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">X_train_cat</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">cat_cols</span><span class="p">]</span> <span class="c1">#pulling out the cat columns from our X_train</span>
+<span class="n">X_train_cat</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>state</th>
+      <th>capital</th>
+      <th>tourism_category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>200</th>
+      <td>SP</td>
+      <td>0</td>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>3517</th>
+      <td>SP</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1907</th>
+      <td>PR</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">X_train_cat</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>state                  0
+capital                0
+tourism_category    1836
+dtype: int64
+</pre></div>
+
+
+<p>After seeing that there are 1815 missing values, and we decide that we dont want to lose any of the valuable information in the rest of the values, we decide to impute those missing values. </p>
+<div class="highlight"><pre><span></span><span class="n">si</span> <span class="o">=</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s1">&#39;other&#39;</span><span class="p">)</span> <span class="c1">#This will fill all missing values as &#39;other&#39;</span>
+
+<span class="n">si</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_cat</span><span class="p">)</span>
+<span class="n">X_train_cat_si</span> <span class="o">=</span> <span class="n">si</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train_cat</span><span class="p">)</span>
+</pre></div>
+
+
+<p>After imputing the missing values, we will now need to one hot encode the columns.</p>
+<div class="highlight"><pre><span></span><span class="n">ohe</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">X_train_cat_ohe</span> <span class="o">=</span> <span class="n">ohe</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_cat_si</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Now that we have imputed all missing values and one hot encoded the categorical columns, we will now place these two steps into a pipeline. We do this by defining them as steps and then placing them in the pipeline. The steps are an array of tuples that contain two values. The first value in a step is the name you are giving the process and the second value is the instantiated step (example si is SimpleImputer and ohe is OneHotEncoder). These steps are then placed in the pipeline and the pipe fits both the X_train and y_train.</p>
+<div class="highlight"><pre><span></span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;impute&#39;</span><span class="p">,</span> <span class="n">si</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;ohe&#39;</span><span class="p">,</span> <span class="n">ohe</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">cat_pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+<span class="n">cat_pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_cat</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Pipeline(memory=None,
+     steps=[(&#39;impute&#39;, SimpleImputer(copy=True, fill_value=&#39;other&#39;, missing_values=nan,
+       strategy=&#39;constant&#39;, verbose=0)), (&#39;ohe&#39;, OneHotEncoder(categorical_features=None, categories=None,
+       dtype=&lt;class &#39;numpy.float64&#39;&gt;, handle_unknown=&#39;error&#39;,
+       n_values=None, sparse=False))])
+</pre></div>
+
+
+<h1>Build a Pipeline for Numerical Columns</h1>
+<div class="highlight"><pre><span></span><span class="n">num_cols</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>[&#39;life_expectancy&#39;, &#39;education_index&#39;, &#39;gdp&#39;, &#39;num_companies&#39;]
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">X_train_num</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span> <span class="c1">#pulling out the numerical columns from our X_train</span>
+<span class="n">X_train_num</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>life_expectancy</th>
+      <th>education_index</th>
+      <th>gdp</th>
+      <th>num_companies</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>200</th>
+      <td>0.863</td>
+      <td>0.687</td>
+      <td>2530729.24</td>
+      <td>2464.0</td>
+    </tr>
+    <tr>
+      <th>3517</th>
+      <td>0.855</td>
+      <td>0.616</td>
+      <td>177756.32</td>
+      <td>213.0</td>
+    </tr>
+    <tr>
+      <th>1907</th>
+      <td>0.843</td>
+      <td>0.676</td>
+      <td>351801.06</td>
+      <td>731.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The numerical columns need to be scaled and imputed. We could transform the columns by Standard Scaling and then transform the columns by SimpleImputing, in a two step process, like we did for the Categorical Columns, but we can actually just skip those two individual processes and place the two steps directly into the pipeline. We simply instantiate the two processes we need to complete, and then skip right to the last step, defining them within the steps and placing those steps into the pipeline.</p>
+<div class="highlight"><pre><span></span><span class="n">si</span> <span class="o">=</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+<span class="n">ss</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+
+<span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;impute&#39;</span><span class="p">,</span> <span class="n">si</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;ss&#39;</span><span class="p">,</span> <span class="n">ss</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">num_pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+<span class="n">num_pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_num</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Pipeline(memory=None,
+     steps=[(&#39;impute&#39;, SimpleImputer(copy=True, fill_value=None, missing_values=nan, strategy=&#39;mean&#39;,
+       verbose=0)), (&#39;ss&#39;, StandardScaler(copy=True, with_mean=True, with_std=True))])
+</pre></div>
+
+
+<h1>Use ColumnTransformer to Concatenate all Data Together</h1>
+<p>The ColumnTransformer can now take both pipelines, concatenating them together, to transform the entirety of the X_train. </p>
+<p>A ColumnTransformer takes an array of tuples with three values. The first value is the name we give the process, the second value is the pipeline created, and the third value is the list of columns that the pipeline was created to transform.</p>
+<div class="highlight"><pre><span></span><span class="n">transformers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="n">cat_pipe</span><span class="p">,</span> <span class="n">cat_cols</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;num&#39;</span><span class="p">,</span> <span class="n">num_pipe</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">ct</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span><span class="n">transformers</span><span class="o">=</span><span class="n">transformers</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">X_train_trans</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">X_train_trans</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(4454, 39)
+</pre></div>
+
+
+<h1>Create a Final Pipeline with a Machine Learning Model</h1>
+<p>Now we can take the transformer and a machine learning model, such as Linear Regression, and create a final pipeline that takes in all the raw data, transforms the data through the individual pipelines, concatenates the data with the transformer, and then predicts.</p>
+<div class="highlight"><pre><span></span><span class="n">lr</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+
+<span class="n">final_steps</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;transformer&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">final_steps</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Pipeline(memory=None,
+     steps=[(&#39;transformer&#39;, ColumnTransformer(n_jobs=None, remainder=&#39;drop&#39;, sparse_threshold=0.3,
+         transformer_weights=None,
+         transformers=[(&#39;cat&#39;, Pipeline(memory=None,
+     steps=[(&#39;impute&#39;, SimpleImputer(copy=True, fill_value=&#39;other&#39;, missing_values=nan,
+       strategy=&#39;constant&#39;, ve...(&#39;model&#39;, LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None,
+         normalize=False))])
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">pipe</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>0.9648703985990568
+</pre></div>
+
+
+<p>Now let's see if the pipeline will work on the test data. The test data was placed aside when we did our train test split. It has not been used for any of the processes above.</p>
+<div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">y_pred</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>array([ 2080.,  5952., 11360., ...,  5632., 30720., 15680.])
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">pipe</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>0.7800829672957542
+</pre></div>
+
+
+<h1>Concluding Remarks</h1>
+<p>There are many benefits to using a Scikit-learn pipeline. By enforcing and implementing the order of steps, it makes a workflow much easier to read and understand. Pipelines are especially useful, if you are working with datasets that are continuously being added to. A pipeline can be used to transform the new data in the same process. </p>
+<p>While I am a big fan of DataFrameMapper, which can also be placed into a pipeline, I often found myself using DataFrameMapper and having to repeat myself, as many columns need the exact same transformations. With the process above, it makes it much simpler, easier, and less time consuming. While I find this new process advantageous, I need to note that there are many advantages for using DataFrameMapper. The main one that comes to mind for me is that DataFrameMapper allows you to keep the annotations and labels that you assigned to your pandas dataframe. The results of my pipeline above, on the other hand, will reduce all information to a array/matrix. This makes DataFrameMapper much easier to comprehend. Both processes have their benefits, and I envision using both in different scenarios.  </p>
+<p>Finally, pipelines can also then be used to GridSearch and find the best models and hyper-paramters. As we can see from our train and test scores, our current model is quite overfit, a GridSearch could aid in finding a model that is less overfit, and our test score could be improved.</p>
+
+            </article>
+        </section>
+    </div> <!-- span -->
+</div>                        </div>
+                    </div> <!-- content row -->
+
+                    <div class="row"> <!-- footer -->
+                        <div class="span7 offset2">
+                            <footer id="site-footer">
+                                <p>
+                                    <a href="" target="_blank">
+                                        
+                                    </a> Kristi Gourlay /
+                                    <a href="https://KristiGourlay.github.io/blog/">Archives</a>
+                                </p>
+                                <p>
+                                    Powered by
+                                    <a href="https://github.com/getpelican/pelican" target="_blank">
+                                        Pelican
+                                    </a>
+                                    /
+                                    Source code on
+                                    <a href="http://github.com/siovene/iovene.com" target="blank">
+                                        GitHub
+                                    </a>
+                                    /
+                                    Theme <code>Lannisport</code>, also on
+                                    <a href="http://github.com/siovene/lannisport" target="_blank">
+                                        GitHub
+                                    </a>
+                                </p>
+                            </footer>
+                        </div> <!-- footer span -->
+                    </div> <!-- footer row -->
+                </div> <!-- header+content+footer span -->
+
+                <div class="span3">
+                    <aside class="affix">
+                        <div id="sidebar">
+                            <div id="social-icons">
+                            </div>
+
+                            <div id="navigation">
+<nav>
+	<h2>Pages</h2>
+	<ul>
+		<li>
+			<ul>
+				<li>
+					<a href="https://KristiGourlay.github.io/blog">Blog</a>
+				</li>
+
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+<nav>
+	<h2>Categories</h2>
+	<ul>
+		<li>
+			<ul>
+					<li>
+						<a href="https://KristiGourlay.github.io/blog/category/misc.html">misc</a>
+					</li>
+			</ul>
+		</li>
+	</ul>
+</nav>                            </div>
+                        </div> <!-- sidebar -->
+
+                        <p id="back-to-top">
+                            <a href="#">
+                                <i class="icon-double-angle-up"></i> Back to top
+                            </a>
+                        </p>
+
+                    </aside>
+                </div> <!-- logo+navigation span -->
+            </div> <!-- row -->
+
+        </div> <!-- /container -->
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="https://KristiGourlay.github.io/blog/theme/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+        <script>$('body').popover || document.write('<script src="https://KristiGourlay.github.io/blog/theme/js/vendor/bootstrap.min.js"><\/script>')</script>
+
+        <script src="https://KristiGourlay.github.io/blog/theme/js/jquery.captions.js"></script>
+        <script src="https://KristiGourlay.github.io/blog/theme/js/vendor/jquery.colorbox-min.js"></script>
+
+        <script src="https://KristiGourlay.github.io/blog/theme/js/main.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount',''],['_trackPageview'],['_trackPageLoadTime'],['_gat._anonymizeIp']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>
